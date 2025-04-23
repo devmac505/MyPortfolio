@@ -1323,6 +1323,20 @@ section:nth-child(even) {
 
 .animation-transition-card {
   transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  transition-delay: var(--card-delay, 0s);
+}
+
+/* Animation classes for skill items */
+.skill-item-hidden {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition-delay: var(--item-delay, 0s);
+}
+
+.skill-item-visible {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 /* Keyframes for animations */

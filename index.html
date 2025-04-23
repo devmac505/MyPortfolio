@@ -503,6 +503,10 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/js/bootstrap.min.js'></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Define inner if it's not defined (to fix potential error)
+    if (typeof inner === 'undefined') {
+      window.inner = {};
+    }
     // Generate background animation elements
     const backgroundAnimation = document.getElementById('background-animation');
     const animationConfig = [
@@ -571,7 +575,7 @@
       cards.forEach((card, index) => {
         card.classList.add('card-hidden');
         card.classList.add('animation-transition-card');
-        card.style.transitionDelay = `${index * 0.1}s`;
+        card.style.setProperty('--card-delay', `${index * 0.1}s`);
       });
 
       // Animate skill groups
@@ -579,16 +583,15 @@
       skillGroups.forEach((group, index) => {
         group.classList.add('card-hidden');
         group.classList.add('animation-transition-card');
-        group.style.transitionDelay = `${index * 0.15}s`;
+        group.style.setProperty('--card-delay', `${index * 0.15}s`);
       });
 
       // Animate skill items with a staggered effect
       const skillItems = document.querySelectorAll('.skill-item');
       skillItems.forEach((item, index) => {
-        item.style.opacity = '0';
-        item.style.transform = 'translateX(-20px)';
-        item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-        item.style.transitionDelay = `${Math.floor(index / 5) * 0.1 + (index % 5) * 0.05}s`;
+        item.classList.add('skill-item-hidden');
+        // Set the transition delay using CSS variable
+        item.style.setProperty('--item-delay', `${Math.floor(index / 5) * 0.1 + (index % 5) * 0.05}s`);
       });
 
       // Create intersection observer for sections
@@ -609,8 +612,8 @@
               // Animate skill items when they become visible
               const visibleItems = entry.target.querySelectorAll('.skill-item');
               visibleItems.forEach(item => {
-                item.style.opacity = '1';
-                item.style.transform = 'translateX(0)';
+                item.classList.remove('skill-item-hidden');
+                item.classList.add('skill-item-visible');
               });
             }
           });
