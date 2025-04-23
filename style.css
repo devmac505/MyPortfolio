@@ -59,6 +59,15 @@
   animation: animate 25s linear infinite;
 }
 
+/* Animation span classes for JS-created elements */
+.bg-span {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  filter: blur(1px);
+  animation: animate 25s linear infinite;
+}
+
 /* Animation span sizes */
 .anim-size-50 { width: 50px; height: 50px; }
 .anim-size-60 { width: 60px; height: 60px; }
@@ -277,8 +286,8 @@ section:nth-child(even) {
   border-radius: 50px;
 }
 
-/* HERO SECTION */
-.hero {
+/* LANDING SECTION */
+.landing, .hero {
   padding-top: 160px;
   position: relative;
   overflow: hidden;
@@ -1321,17 +1330,59 @@ section:nth-child(even) {
   transform: translateY(40px);
 }
 
+.card-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .animation-transition-card {
   transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-  transition-delay: var(--card-delay, 0s);
 }
+
+/* Card delay classes */
+.card-delay-0 { transition-delay: 0s; }
+.card-delay-1 { transition-delay: 0.1s; }
+.card-delay-2 { transition-delay: 0.2s; }
+.card-delay-3 { transition-delay: 0.3s; }
+.card-delay-4 { transition-delay: 0.4s; }
+.card-delay-5 { transition-delay: 0.5s; }
+.card-delay-6 { transition-delay: 0.6s; }
+.card-delay-7 { transition-delay: 0.7s; }
+.card-delay-8 { transition-delay: 0.8s; }
+.card-delay-9 { transition-delay: 0.9s; }
+.card-delay-10 { transition-delay: 1s; }
+
+/* Group delay classes */
+.group-delay-0 { transition-delay: 0s; }
+.group-delay-1 { transition-delay: 0.15s; }
+.group-delay-2 { transition-delay: 0.3s; }
+.group-delay-3 { transition-delay: 0.45s; }
+.group-delay-4 { transition-delay: 0.6s; }
+.group-delay-5 { transition-delay: 0.75s; }
+
+/* Skill item delay classes */
+.skill-delay-0 { transition-delay: 0s; }
+.skill-delay-1 { transition-delay: 0.05s; }
+.skill-delay-2 { transition-delay: 0.1s; }
+.skill-delay-3 { transition-delay: 0.15s; }
+.skill-delay-4 { transition-delay: 0.2s; }
+.skill-delay-5 { transition-delay: 0.25s; }
+.skill-delay-6 { transition-delay: 0.3s; }
+.skill-delay-7 { transition-delay: 0.35s; }
+.skill-delay-8 { transition-delay: 0.4s; }
+.skill-delay-9 { transition-delay: 0.45s; }
+.skill-delay-10 { transition-delay: 0.5s; }
+.skill-delay-11 { transition-delay: 0.55s; }
+.skill-delay-12 { transition-delay: 0.6s; }
+.skill-delay-13 { transition-delay: 0.65s; }
+.skill-delay-14 { transition-delay: 0.7s; }
+.skill-delay-15 { transition-delay: 0.75s; }
 
 /* Animation classes for skill items */
 .skill-item-hidden {
   opacity: 0;
   transform: translateX(-20px);
   transition: opacity 0.3s ease, transform 0.3s ease;
-  transition-delay: var(--item-delay, 0s);
 }
 
 .skill-item-visible {
