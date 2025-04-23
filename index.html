@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mark Anthony Custodio | Full Stack Developer</title>
+  <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css'>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+<!-- Animated Background -->
+<div id="background-animation" class="background-animation"></div>
+
+<!-- partial:index.partial.html -->
+<nav class="navbar navbar-expand-lg fixed-top shadow-sm">
+  <div class="container-lg">
+    <a class="navbar-brand fw-bold order-1 order-lg-0" href="#">
+      <span class="highlight">Dev</span>Mac
+    </a>
+    <div class="theme-toggle-wrapper order-2 order-lg-2">
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <i class="bi bi-sun-fill light-icon"></i>
+        <i class="bi bi-moon-fill dark-icon"></i>
+      </button>
+    </div>
+    <button class="navbar-toggler order-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse order-4 order-lg-1" id="navbarNav">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#hero">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tools">Tools</a></li>
+        <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
+        <li class="nav-item"><a class="nav-link d-lg-none" href="#contact">Contact</a></li>
+      </ul>
+      <a class="btn btn-primary contact-btn d-none d-lg-block" href="#contact">Let's Talk</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="container-lg">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <div class="hero-text">
+          <span class="subtitle">👋 Hello, I'm</span>
+          <h1 class="display-3 fw-bold">Mark Anthony Custodio</h1>
+          <div class="typed-text mb-4">
+            <span class="profession">FULL STACK DEVELOPER</span>
+          </div>
+          <p class="lead">Passionate backend developer focused on building robust, scalable server-side applications with secure APIs and efficient database systems.</p>
+          <div class="hero-btns">
+            <a href="#projects" class="btn btn-primary me-3">View My Work</a>
+            <a href="#contact" class="btn btn-outline-dark">Get In Touch</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 text-center">
+        <div class="hero-img">
+          <img src="images/photo.jpg" class="img-fluid rounded-circle profile-img" alt="Mark Anthony Custodio">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tools text-center" id="tools">
+  <div class="container">
+    <h2 class="section-title">My Tools</h2>
+    <p class="section-description mb-5">Technologies and software I use daily</p>
+    <div class="row g-4">
+      <div class="col-6 col-md-3 tool-item">
+        <div class="tool-icon">
+          <img src="images/node-logo.webp" alt="Node.js">
+        </div>
+        <h5>Node.js</h5>
+      </div>
+      <div class="col-6 col-md-3 tool-item">
+        <div class="tool-icon">
+          <img src="images/mongodb.jpg" alt="MongoDB">
+        </div>
+        <h5>MongoDB</h5>
+      </div>
+      <div class="col-6 col-md-3 tool-item">
+        <div class="tool-icon">
+          <img src="images/nosql.jpg" alt="NoSQL">
+        </div>
+        <h5>NoSQL</h5>
+      </div>
+      <div class="col-6 col-md-3 tool-item">
+        <div class="tool-icon">
+          <img src="images/express.jpg" alt="Express.js">
+        </div>
+        <h5>Express.js</h5>
+      </div>
+    </div>
+    <div class="row g-4 mt-3">
+      <div class="col-6 col-md-3 tool-item">
+        <div class="tool-icon">
+          <img src="images/javascript-logo.webp" alt="JavaScript">
+        </div>
+        <h5>JavaScript</h5>
+      </div>
+      <div class="col-6 col-md-3 tool-item">
+        <div class="tool-icon">
+          <img src="images/git.jpg" alt="Git/GitHub">
+        </div>
+        <h5>Git/GitHub</h5>
+      </div>
+      <div class="col-6 col-md-3 tool-item">
+        <div class="tool-icon">
+          <img src="images/logo-html5.png" alt="HTML5/CSS3">
+        </div>
+        <h5>HTML5/CSS3</h5>
+      </div>
+      <div class="col-6 col-md-3 tool-item">
+        <div class="tool-icon">
+          <img src="images/bootstrap.png" alt="Bootstrap">
+        </div>
+        <h5>Bootstrap</h5>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="services" id="services">
+  <div class="container text-center">
+    <h2 class="section-title">Services</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="bi bi-database-fill"></i>
+          </div>
+          <h3>Backend Development</h3>
+          <p>Building robust, scalable server-side applications with secure APIs, database management, and efficient business logic implementation.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="bi bi-code-slash"></i>
+          </div>
+          <h3>Full Stack Development</h3>
+          <p>Creating end-to-end web solutions that integrate both frontend and backend technologies for seamless user experiences.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="bi bi-cloud-check-fill"></i>
+          </div>
+          <h3>DevOps & Deployment</h3>
+          <p>Setting up CI/CD pipelines, server configuration, and deployment strategies to ensure your applications run smoothly in production.</p>
+        </div>
+      </div>
+    </div>
+    <div class="row g-4 mt-4">
+      <div class="col-md-4">
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+          <h3>API Development</h3>
+          <p>Designing and implementing secure, well-documented APIs that connect your applications to data sources and third-party services.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="bi bi-hdd-network-fill"></i>
+          </div>
+          <h3>Database Design</h3>
+          <p>Creating efficient database schemas, optimizing queries, and implementing data models that support your application needs.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="bi bi-palette-fill"></i>
+          </div>
+          <h3>UI/UX Design</h3>
+          <p>Creating user-friendly and visually appealing interfaces that enhance the user experience.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="container">
+    <h2 class="section-title">About Me</h2>
+    <div class="row align-items-center">
+      <div class="col-lg-6 text-start">
+        <div class="about-content">
+          <div class="about-text">
+            <h3 class="about-greeting mb-3">Hello, I'm <span class="highlight">Mark Anthony</span></h3>
+            <p class="about-intro">I specialize in <strong>Full Stack Web Development</strong> with a strong focus on JavaScript, MongoDB, Express, and React. I approach each project with a balance of technical precision and user-centered design, aiming to build applications that are both efficient and intuitive.</p>
+            <p>My experience includes backend development, frontend integration, and project coordination using tools like Git, Trello, and Postman. I'm passionate about continuous learning, mentoring others in tech, and delivering high-quality solutions that solve real-world problems.</p>
+          </div>
+
+          <div class="about-highlights mt-4">
+            <div class="highlight-item">
+              <div class="highlight-icon">
+                <i class="bi bi-code-square"></i>
+              </div>
+              <div class="highlight-content">
+                <h4>Clean Code</h4>
+                <p>I write clean, maintainable code following best practices and design patterns.</p>
+              </div>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-icon">
+                <i class="bi bi-lightning-charge"></i>
+              </div>
+              <div class="highlight-content">
+                <h4>Fast Learner</h4>
+                <p>I quickly adapt to new technologies and frameworks to stay current with industry trends.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="about-details mt-4">
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong><i class="bi bi-envelope"></i> Email:</strong> markcustodii@gmail.com</p>
+                <p><strong><i class="bi bi-telephone"></i> Phone:</strong> 09452103585</p>
+              </div>
+              <div class="col-md-6">
+                <p><strong><i class="bi bi-geo-alt"></i> Location:</strong> Philippines</p>
+                <p><strong><i class="bi bi-translate"></i> Languages:</strong> English, Filipino</p>
+              </div>
+            </div>
+            <div class="mt-4">
+              <a href="#" class="btn btn-primary me-3">Download CV</a>
+              <a href="#contact" class="btn btn-outline-dark">Contact Me</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mt-5 mt-lg-0">
+        <div class="skills-list">
+          <h3 class="mb-4">My Skills</h3>
+
+          <!-- Backend Skills -->
+          <div class="skill-group mb-4">
+            <div class="skill-group-header">
+              <i class="bi bi-server skill-icon"></i>
+              <h4>Backend Development</h4>
+            </div>
+            <div class="skill-items">
+              <div class="skill-item">
+                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                <span class="skill-name">Node.js</span>
+              </div>
+              <div class="skill-item">
+                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                <span class="skill-name">Express.js</span>
+              </div>
+              <div class="skill-item">
+                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                <span class="skill-name">MongoDB</span>
+              </div>
+              <div class="skill-item">
+                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                <span class="skill-name">RESTful API Design</span>
+              </div>
+              <div class="skill-item">
+                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                <span class="skill-name">Authentication & Security</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frontend Skills -->
+          <div class="skill-group">
+            <div class="skill-group-header">
+              <i class="bi bi-window skill-icon"></i>
+              <h4>Frontend Development</h4>
+            </div>
+            <div class="skill-items">
+              <div class="skill-item">
+                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                <span class="skill-name">HTML5/CSS3</span>
+              </div>
+              <div class="skill-item">
+                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                <span class="skill-name">JavaScript (ES6+)</span>
+              </div>
+              <div class="skill-item">
+                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                <span class="skill-name">Bootstrap</span>
+              </div>
+              <div class="skill-item">
+                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                <span class="skill-name">Responsive Design</span>
+              </div>
+              <div class="skill-item">
+                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                <span class="skill-name">UI/UX Principles</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="projects" id="projects">
+  <div class="container">
+    <h2 class="section-title">Projects</h2>
+    <p class="section-description mb-5">Some of my recent work</p>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="project-card">
+          <div class="project-img">
+            <img src="./images/E-commerce.jpg" alt="E-Commerce Website">
+            <div class="project-overlay">
+              <div class="project-links">
+                <a href="#" class="project-link"><i class="bi bi-eye"></i></a>
+                <a href="https://github.com/devmac505/E-commerce-website.git" class="project-link"><i class="bi bi-github"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="project-info">
+            <h4>E-Commerce Website</h4>
+            <p> A responsive e-commerce website featuring product listings, shopping cart functionality, and a sleek user interface.</p>
+            <div class="project-tags">
+              <span>MERN</span>
+              <span>CSS</span>
+              <span>JavaScript</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="project-card">
+          <div class="project-img">
+            <img src="./images/mini-project.jpg" alt="Mini Projects">
+            <div class="project-overlay">
+              <div class="project-links">
+                <a href="#" class="project-link"><i class="bi bi-eye"></i></a>
+                <a href="https://github.com/devmac505/mini-js-projects" class="project-link"><i class="bi bi-github"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="project-info">
+            <h4>JavaScript Mini Projects</h4>
+            <p>A collection of mini basic application in Javascript with open source code focus on fundamentals and improving skills and logic.</p>
+            <div class="project-tags">
+              <span>HTML</span>
+              <span>CSS</span>
+              <span>JavaScript</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="project-card">
+          <div class="project-img">
+            <img src="https://codingyaar.com/wp-content/uploads/image-plcaeholder.png" alt="Project Management">
+            <div class="project-overlay">
+              <div class="project-links">
+                <a href="#" class="project-link"><i class="bi bi-eye"></i></a>
+                <a href="#" class="project-link"><i class="bi bi-github"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="project-info">
+            <h4>Project Management Dashboard</h4>
+            <p>Designed and developed a simple blog platform with categorized posts, a featured section.</p>
+            <div class="project-tags">
+              <span>UPDATE SOON</span>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="project-card">
+          <div class="project-img">
+            <img src="https://codingyaar.com/wp-content/uploads/image-plcaeholder.png" alt="Blog Platform">
+            <div class="project-overlay">
+              <div class="project-links">
+                <a href="#" class="project-link"><i class="bi bi-eye"></i></a>
+                <a href="#" class="project-link"><i class="bi bi-github"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="project-info">
+            <h4>Blog Platform</h4>
+            <p>Created a visually appealing, mobile-friendly landing page with smooth navigation and responsive grids.</p>
+            <div class="project-tags">
+              <span>UPDATE SOON</span>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="container">
+    <h2 class="section-title">Get In Touch</h2>
+    <p class="section-description mb-5">Feel free to contact me</p>
+    <div class="row">
+      <div class="col-lg-5 mb-4 mb-lg-0">
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="bi bi-geo-alt-fill"></i>
+            </div>
+            <div class="contact-text">
+              <h5>Location</h5>
+              <p>Philippines</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="bi bi-envelope-fill"></i>
+            </div>
+            <div class="contact-text">
+              <h5>Email</h5>
+              <p>markcustodii@gmail.com</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="bi bi-telephone-fill"></i>
+            </div>
+            <div class="contact-text">
+              <h5>Phone</h5>
+              <p>09452103585</p>
+            </div>
+          </div>
+          <div class="social-media">
+            <a href="https://www.facebook.com/markanthonyabril.custodio" class="social-link"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
+            <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+            <a href="https://github.com/devmac505" class="social-link"><i class="bi bi-github"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <form class="contact-form" action="https://formsubmit.co/markcustodii@gmail.com" method="POST">
+          <input type="hidden" name="_subject" value="New message from portfolio website">
+          <input type="hidden" name="_captcha" value="false">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+            </div>
+            <div class="col-md-6">
+              <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+            </div>
+            <div class="col-12">
+              <input type="text" name="subject" class="form-control" placeholder="Subject">
+            </div>
+            <div class="col-12">
+              <textarea name="message" class="form-control" rows="5" placeholder="Your Message" required></textarea>
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary w-100 submit-btn">
+                <span class="submit-text">Send Message</span>
+                <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h3 class="fw-bold">DevMac</h3>
+        <p>Full Stack Web Developer specializing in creating beautiful, functional websites and applications.</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <!-- Social media links removed -->
+      </div>
+    </div>
+    <hr>
+    <div class="copyright text-center">
+      <p>&copy; 2025 Mark Anthony Custodio. All Rights Reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/js/bootstrap.min.js'></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Generate background animation elements
+    const backgroundAnimation = document.getElementById('background-animation');
+    const animationConfig = [
+      { size: 70, left: 5, delay: 0, duration: 22 },
+      { size: 150, left: 10, delay: 2, duration: 26 },
+      { size: 80, left: 20, delay: 0, duration: 18 },
+      { size: 100, left: 30, delay: 4, duration: 24 },
+      { size: 60, left: 40, delay: 0, duration: 20 },
+      { size: 120, left: 50, delay: 6, duration: 30 },
+      { size: 90, left: 60, delay: 0, duration: 25 },
+      { size: 140, left: 70, delay: 8, duration: 28 },
+      { size: 110, left: 80, delay: 5, duration: 20 },
+      { size: 50, left: 90, delay: 3, duration: 18 }
+    ];
+
+    animationConfig.forEach(config => {
+      const span = document.createElement('span');
+      span.classList.add(`anim-size-${config.size}`);
+      span.classList.add(`anim-left-${config.left}`);
+      span.classList.add(`anim-delay-${config.delay}`);
+      span.classList.add(`anim-duration-${config.duration}`);
+      backgroundAnimation.appendChild(span);
+    });
+
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // Set initial theme
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    // Theme toggle event
+    themeToggle.addEventListener('click', function() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    });
+
+    // Form submission
+    const contactForm = document.querySelector('.contact-form');
+    if (contactForm) {
+      contactForm.addEventListener('submit', function() {
+        const submitBtn = document.querySelector('.submit-btn');
+        const submitText = document.querySelector('.submit-text');
+        const spinner = document.querySelector('.spinner-border');
+        submitText.textContent = 'Sending...';
+        spinner.classList.remove('d-none');
+        submitBtn.disabled = true;
+      });
+    }
+
+    // Enhanced scroll reveal animation
+    const animateElements = () => {
+      // Animate sections
+      const sections = document.querySelectorAll('section:not(#hero)');
+      sections.forEach(section => {
+        section.classList.add('section-hidden');
+      });
+
+      // Animate elements within sections
+      const cards = document.querySelectorAll('.service-card, .project-card, .tool-item, .contact-item, .highlight-item');
+      cards.forEach((card, index) => {
+        card.classList.add('card-hidden');
+        card.classList.add('animation-transition-card');
+        card.style.transitionDelay = `${index * 0.1}s`;
+      });
+
+      // Animate skill groups
+      const skillGroups = document.querySelectorAll('.skill-group');
+      skillGroups.forEach((group, index) => {
+        group.classList.add('card-hidden');
+        group.classList.add('animation-transition-card');
+        group.style.transitionDelay = `${index * 0.15}s`;
+      });
+
+      // Animate skill items with a staggered effect
+      const skillItems = document.querySelectorAll('.skill-item');
+      skillItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-20px)';
+        item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        item.style.transitionDelay = `${Math.floor(index / 5) * 0.1 + (index % 5) * 0.05}s`;
+      });
+
+      // Create intersection observer for sections
+      const sectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('section-visible');
+              entry.target.classList.remove('section-hidden');
+              sectionObserver.unobserve(entry.target);
+
+              // Animate elements inside the visible section
+              const elementsInSection = entry.target.querySelectorAll('.service-card, .project-card, .tool-item, .contact-item, .skill-group, .highlight-item');
+              elementsInSection.forEach(el => {
+                el.classList.remove('card-hidden');
+              });
+
+              // Animate skill items when they become visible
+              const visibleItems = entry.target.querySelectorAll('.skill-item');
+              visibleItems.forEach(item => {
+                item.style.opacity = '1';
+                item.style.transform = 'translateX(0)';
+              });
+            }
+          });
+        },
+        { threshold: 0.15 }
+      );
+
+      sections.forEach(section => {
+        sectionObserver.observe(section);
+      });
+    };
+
+    // Initialize animations
+    animateElements();
+
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: 'smooth'
+          });
+
+          // Close navbar if it's open on mobile
+          const navbarCollapse = document.querySelector('.navbar-collapse');
+          if (navbarCollapse.classList.contains('show')) {
+            document.querySelector('.navbar-toggler').click();
+          }
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>
