@@ -61,7 +61,7 @@ router.delete('/:id', protect, authorize('admin'), async (req, res) => {
     const tool = await Tool.findById(req.params.id);
     if (!tool) return res.status(404).json({ message: 'Tool not found' });
 
-    await tool.remove();
+    await Tool.deleteOne({ _id: req.params.id });
     res.json({ message: 'Tool deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
