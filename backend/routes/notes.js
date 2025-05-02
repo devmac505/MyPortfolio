@@ -17,13 +17,14 @@ router.get('/', async (req, res) => {
 // Add a new note
 router.post('/', async (req, res) => {
   try {
-    const { nickname, message, color } = req.body;
+    const { author, content, color, position } = req.body;
 
     // Create new note
     const newNote = new Note({
-      nickname: nickname || 'Anonymous',
-      message,
-      color: color || 'yellow'
+      author: author || 'Anonymous',
+      content,
+      color: color || '#f9d77e',
+      position
     });
 
     // Save to database
@@ -45,7 +46,7 @@ router.delete('/:id', protect, authorize('admin'), async (req, res) => {
       return res.status(404).json({ message: 'Note not found' });
     }
 
-    await note.remove();
+    await Note.deleteOne({ _id: req.params.id });
     res.json({ success: true, message: 'Note removed' });
   } catch (err) {
     console.error(err);
