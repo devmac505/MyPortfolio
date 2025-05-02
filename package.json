@@ -1,0 +1,29 @@
+{
+  "name": "portfolio-website",
+  "version": "1.0.0",
+  "description": "Personal portfolio website with MERN stack",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "live-server --port=3000",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "install:backend": "cd backend && npm install",
+    "install:all": "npm install && npm run install:backend",
+    "seed": "cd backend && node seed.js"
+  },
+  "keywords": [
+    "portfolio",
+    "mern",
+    "mongodb",
+    "express",
+    "node"
+  ],
+  "author": "Mark Anthony Custodio",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "live-server": "^1.2.2"
+  }
+}
