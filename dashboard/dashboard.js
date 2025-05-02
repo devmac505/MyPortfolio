@@ -139,11 +139,12 @@ document.addEventListener('DOMContentLoaded', function() {
     submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logging in...';
 
     // Call the authentication API
-    fetch(`${API_URL}/tools`, {
-      method: 'GET',
+    fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      body: JSON.stringify({ username, password })
     })
     .then(response => {
       if (!response.ok) {
@@ -152,13 +153,12 @@ document.addEventListener('DOMContentLoaded', function() {
       return response.json();
     })
     .then(data => {
-      // For now, just check if username and password match hardcoded values
-      if (username === 'devmac' && password === 'devmac12') {
+      if (data.success && data.token) {
         // Set authentication state
         isAuthenticated = true;
 
-        // Generate a simple token (not secure, just for testing)
-        authToken = 'temp_token_' + Date.now();
+        // Save the JWT token
+        authToken = data.token;
 
         // Save auth state to session storage
         sessionStorage.setItem('authToken', authToken);
