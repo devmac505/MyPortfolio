@@ -1,0 +1,22 @@
+# Protect the dashboard directory
+# This is a basic protection, for a real application you would want to use proper authentication
+
+# Disable directory browsing
+Options -Indexes
+
+# Deny access to PHP files (except index.php and upload.php)
+<FilesMatch "\.php$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "(index|upload)\.php$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Protect .htaccess file
+<Files .htaccess>
+    Order Allow,Deny
+    Deny from all
+</Files>
