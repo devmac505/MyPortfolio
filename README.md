@@ -83,6 +83,15 @@ The default admin credentials are:
 
 You can access the admin dashboard by clicking the Admin button in the navbar and logging in with these credentials.
 
+### Admin Login Issues
+
+If you're having trouble logging in with the admin credentials, please refer to the `ADMIN-LOGIN-FIX.md` file for detailed troubleshooting steps. You can run the following script to recreate the admin user:
+
+```
+cd backend
+node forceCreateAdmin.js
+```
+
 ## Project Structure
 
 - `/backend` - Express server and API
