@@ -1,7 +1,5 @@
 // New Freedom Wall JavaScript - Simplified Version
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('New Freedom Wall script loaded');
-
   // DOM Elements
   const notesContainer = document.getElementById('notes-container');
   const addNoteBtn = document.getElementById('add-note-btn');
@@ -47,17 +45,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize
   function init() {
-    console.log('Initializing Freedom Wall...');
-
     // Load saved note positions
     try {
       const savedPositions = localStorage.getItem('notePositions');
       if (savedPositions) {
         notePositions = JSON.parse(savedPositions);
-        console.log('Loaded note positions:', notePositions);
       }
     } catch (error) {
-      console.error('Error loading note positions:', error);
       notePositions = {};
     }
 
@@ -66,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
       try {
         // Pre-initialize the modals to ensure they're ready
         new bootstrap.Modal(noteModal);
-        console.log('Note modal initialized');
 
         // Fix iOS Safari issues with modals
         noteModal.addEventListener('touchmove', function(e) {
@@ -80,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (viewNoteModal) {
       try {
         new bootstrap.Modal(viewNoteModal);
-        console.log('View note modal initialized');
 
         // Fix iOS Safari issues with modals
         viewNoteModal.addEventListener('touchmove', function(e) {
@@ -94,8 +86,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle mobile device detection
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (isMobile) {
-      console.log('Mobile device detected, adjusting for touch interactions');
-
       // Add special class for mobile styling
       document.body.classList.add('mobile-device');
 
@@ -110,37 +100,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load notes
     loadNotes();
-
-    // Log that initialization is complete
-    console.log('Freedom Wall initialization complete');
   }
 
   // Set up event listeners
   function setupEventListeners() {
-    console.log('Setting up event listeners...');
-
     // Add note button
     if (addNoteBtn) {
-      console.log('Add note button found, adding click event');
       addNoteBtn.addEventListener('click', function(event) {
         event.preventDefault();
-        console.log('Add note button clicked');
         openAddNoteModal();
       });
-    } else {
-      console.error('Add note button not found!');
     }
 
     // Save note button
     if (saveNoteBtn) {
-      console.log('Save note button found, adding click event');
       saveNoteBtn.addEventListener('click', function(event) {
         event.preventDefault();
-        console.log('Save note button clicked');
         saveNote();
       });
-    } else {
-      console.error('Save note button not found!');
     }
 
     // Set up modal events
@@ -150,11 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if (closeNoteBtn) {
         closeNoteBtn.addEventListener('click', function(event) {
           event.preventDefault();
-          console.log('Close note button clicked');
           closeModal();
         });
-      } else {
-        console.error('Close note button not found!');
       }
 
       // Add event listener to close button in header
@@ -162,12 +136,9 @@ document.addEventListener('DOMContentLoaded', function() {
       if (closeHeaderBtn) {
         closeHeaderBtn.addEventListener('click', function(event) {
           event.preventDefault();
-          console.log('Close header button clicked');
           closeModal();
         });
       }
-    } else {
-      console.error('Note modal not found!');
     }
 
     if (viewNoteModal) {
@@ -176,11 +147,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if (closeViewBtn) {
         closeViewBtn.addEventListener('click', function(event) {
           event.preventDefault();
-          console.log('Close view button clicked');
           closeModal();
         });
-      } else {
-        console.error('Close view button not found!');
       }
 
       // Add event listener to close button in header
@@ -188,12 +156,9 @@ document.addEventListener('DOMContentLoaded', function() {
       if (closeHeaderBtn) {
         closeHeaderBtn.addEventListener('click', function(event) {
           event.preventDefault();
-          console.log('Close view header button clicked');
           closeModal();
         });
       }
-    } else {
-      console.error('View note modal not found!');
     }
 
     // Color select
@@ -202,17 +167,11 @@ document.addEventListener('DOMContentLoaded', function() {
       colorSelect.addEventListener('change', function() {
         updateColorPreview(this.value);
       });
-    } else {
-      console.error('Color select not found!');
     }
-
-    console.log('All event listeners set up');
   }
 
   // Open add note modal
   function openAddNoteModal() {
-    console.log('Opening add note modal');
-
     // Reset form
     const nicknameEl = document.getElementById('note-nickname');
     const messageEl = document.getElementById('note-message');
@@ -238,21 +197,13 @@ document.addEventListener('DOMContentLoaded', function() {
       noteModal.style.display = 'block';
       noteModal.classList.add('show');
 
-      // Don't add modal-open class to body to prevent scrolling issues
-      // document.body.classList.add('modal-open');
-
-      // Don't add backdrop
-
       // Focus on the nickname field after a delay
       setTimeout(() => {
         if (nicknameEl) {
           // Then focus on the input field
           nicknameEl.focus();
-          console.log('Focus set on nickname field');
         }
       }, 300);
-    } else {
-      console.error('Note modal element not found');
     }
   }
 
@@ -293,7 +244,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const colorEl = document.getElementById('note-color');
 
     if (!nicknameEl || !messageEl || !colorEl) {
-      console.error('Form elements not found!');
       return;
     }
 
@@ -306,13 +256,9 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    console.log('Saving note:', { nickname, message, color });
-
     try {
       if (currentEditingNoteId) {
         // Edit existing note
-        console.log('Editing existing note:', currentEditingNoteId);
-
         // Find the existing note in localStorage
         const savedNotes = JSON.parse(localStorage.getItem('freedomWallNotes') || '[]');
         const noteIndex = savedNotes.findIndex(n => (n._id || n.id) === currentEditingNoteId);
@@ -326,8 +272,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
           // Save to localStorage
           localStorage.setItem('freedomWallNotes', JSON.stringify(savedNotes));
-
-          console.log('Note updated in localStorage');
         }
 
         // Update the DOM
@@ -366,8 +310,6 @@ document.addEventListener('DOMContentLoaded', function() {
         savedNotes.push(newNote);
         localStorage.setItem('freedomWallNotes', JSON.stringify(savedNotes));
 
-        console.log('New note saved to localStorage');
-
         // Add to DOM
         addNoteToDOM(newNote);
       }
@@ -385,8 +327,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Load notes from localStorage
   function loadNotes() {
-    console.log('Loading notes...');
-
     // Clear the container
     if (notesContainer) {
       notesContainer.innerHTML = '';
@@ -396,10 +336,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const savedNotes = JSON.parse(localStorage.getItem('freedomWallNotes') || '[]');
 
     if (savedNotes.length > 0) {
-      console.log('Found notes in localStorage:', savedNotes);
       savedNotes.forEach(note => addNoteToDOM(note));
     } else {
-      console.log('No notes in localStorage, using sample notes');
       // If localStorage is empty, use sample notes
       sampleNotes.forEach(note => addNoteToDOM(note));
       // Save sample notes to localStorage for future use

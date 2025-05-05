@@ -22,11 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
       spinner.classList.remove('d-none');
       submitBtn.disabled = true;
 
-      // Get form data
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const message = document.getElementById('message').value;
-
       // Simulate sending email (replace with actual email sending logic)
       setTimeout(() => {
         // Reset form
@@ -44,8 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // API base URL
-  const API_URL = 'http://localhost:5000/api';
-  const SERVER_URL = 'http://localhost:5000';
+  const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
+  const SERVER_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 
   // Load data from JSON files
   loadTools();
@@ -55,22 +50,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Load tools data
   function loadTools() {
-    console.log('Fetching tools from API:', `${API_URL}/tools`);
     fetch(`${API_URL}/tools`)
       .then(response => {
-        console.log('Tools API response status:', response.status);
         if (!response.ok) {
           throw new Error('Tools data not found');
         }
         return response.json();
       })
       .then(data => {
-        console.log('Tools data received:', data);
         renderTools(data);
       })
       .catch(error => {
-        console.error('Error loading tools:', error);
-        document.getElementById('tools-container').innerHTML = '<div class="col-12 text-center py-5"><p>Error loading tools. Please try again later.</p></div>';
+        console.error('Error loading tools from API:', error);
+        // Fallback to mock data
+        fetch('./mock-data/tools.json')
+          .then(response => response.json())
+          .then(mockData => {
+            console.log('Using mock tools data');
+            renderTools(mockData);
+          })
+          .catch(mockError => {
+            console.error('Error loading mock tools data:', mockError);
+            document.getElementById('tools-container').innerHTML = '<div class="col-12 text-center py-5"><p>Error loading tools. Please try again later.</p></div>';
+          });
       });
   }
 
@@ -87,8 +89,18 @@ document.addEventListener('DOMContentLoaded', function() {
         renderServices(data);
       })
       .catch(error => {
-        console.error('Error loading services:', error);
-        document.getElementById('services-container').innerHTML = '<div class="col-12 text-center py-5"><p>Error loading services. Please try again later.</p></div>';
+        console.error('Error loading services from API:', error);
+        // Fallback to mock data
+        fetch('./mock-data/services.json')
+          .then(response => response.json())
+          .then(mockData => {
+            console.log('Using mock services data');
+            renderServices(mockData);
+          })
+          .catch(mockError => {
+            console.error('Error loading mock services data:', mockError);
+            document.getElementById('services-container').innerHTML = '<div class="col-12 text-center py-5"><p>Error loading services. Please try again later.</p></div>';
+          });
       });
   }
 
@@ -105,8 +117,18 @@ document.addEventListener('DOMContentLoaded', function() {
         renderProjects(data);
       })
       .catch(error => {
-        console.error('Error loading projects:', error);
-        document.getElementById('projects-container').innerHTML = '<div class="col-12 text-center py-5"><p>Error loading projects. Please try again later.</p></div>';
+        console.error('Error loading projects from API:', error);
+        // Fallback to mock data
+        fetch('./mock-data/projects.json')
+          .then(response => response.json())
+          .then(mockData => {
+            console.log('Using mock projects data');
+            renderProjects(mockData);
+          })
+          .catch(mockError => {
+            console.error('Error loading mock projects data:', mockError);
+            document.getElementById('projects-container').innerHTML = '<div class="col-12 text-center py-5"><p>Error loading projects. Please try again later.</p></div>';
+          });
       });
   }
 
@@ -147,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
           imagePath = `./${imagePath}`;
         }
 
-        console.log(`Tool: ${tool.name}, Image path: ${imagePath}`);
+
 
         html += `
           <div class="col-6 col-md-3 tool-item">
@@ -248,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
         imagePath = `./${imagePath}`;
       }
 
-      console.log(`Project: ${project.title}, Image path: ${imagePath}`);
+
 
       html += `
         <div class="col-md-6 col-lg-3">
@@ -295,8 +317,18 @@ document.addEventListener('DOMContentLoaded', function() {
         renderSkills(data);
       })
       .catch(error => {
-        console.error('Error loading skills:', error);
-        document.getElementById('skills-container').innerHTML = '<div class="text-center py-5"><p>Error loading skills. Please try again later.</p></div>';
+        console.error('Error loading skills from API:', error);
+        // Fallback to mock data
+        fetch('./mock-data/skills.json')
+          .then(response => response.json())
+          .then(mockData => {
+            console.log('Using mock skills data');
+            renderSkills(mockData);
+          })
+          .catch(mockError => {
+            console.error('Error loading mock skills data:', mockError);
+            document.getElementById('skills-container').innerHTML = '<div class="text-center py-5"><p>Error loading skills. Please try again later.</p></div>';
+          });
       });
   }
 
