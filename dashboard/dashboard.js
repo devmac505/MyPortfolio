@@ -53,12 +53,35 @@ document.addEventListener('DOMContentLoaded', function() {
   function checkAuth() {
     const token = sessionStorage.getItem('authToken');
     if (token) {
-      // For now, just accept any token
-      authToken = token;
-      isAuthenticated = true;
-      showDashboard();
-      loadAllData();
+      console.log('Found token in session storage');
+      // Verify the token is valid by making a test request
+      fetch(`${API_URL}/test-auth`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Token is valid');
+          authToken = token;
+          isAuthenticated = true;
+          showDashboard();
+          loadAllData();
+        } else {
+          console.error('Token is invalid, showing login form');
+          sessionStorage.removeItem('authToken');
+          showLoginHelp();
+          setupPasswordToggle();
+        }
+      })
+      .catch(error => {
+        console.error('Error verifying token:', error);
+        sessionStorage.removeItem('authToken');
+        showLoginHelp();
+        setupPasswordToggle();
+      });
     } else {
+      console.log('No token found, showing login form');
       // No token found, show login form
       showLoginHelp();
       setupPasswordToggle();
@@ -102,27 +125,70 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Custom modal functions
   function showModal(modalEl) {
-    if (!modalEl) return;
+    if (!modalEl) {
+      console.error('Modal element is null or undefined');
+      return;
+    }
 
-    // Show the modal directly
-    modalEl.style.display = 'block';
-    modalEl.classList.add('show');
+    console.log(`Showing modal:`, modalEl.id);
 
-    // Don't add modal-open class to body to prevent scrolling issues
-    // document.body.classList.add('modal-open');
+    // Show the modal using Bootstrap's modal method if available
+    try {
+      const bsModal = new bootstrap.Modal(modalEl);
+      bsModal.show();
+    } catch (error) {
+      console.error('Error showing modal with Bootstrap:', error);
+
+      // Fallback to manual showing
+      modalEl.style.display = 'block';
+      modalEl.classList.add('show');
+      document.body.classList.add('modal-open');
+
+      // Add backdrop
+      const backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      document.body.appendChild(backdrop);
+    }
   }
 
   function hideModal(modalEl) {
-    if (!modalEl) return;
+    if (!modalEl) {
+      console.error('Modal element is null or undefined');
+      return;
+    }
 
-    // Hide modal manually
-    modalEl.style.display = 'none';
-    modalEl.classList.remove('show');
+    console.log(`Hiding modal:`, modalEl.id);
 
-    // Remove any existing backdrop
-    const backdrop = document.querySelector('.modal-backdrop');
-    if (backdrop) {
-      backdrop.remove();
+    // Hide the modal using Bootstrap's modal method if available
+    try {
+      const bsModal = bootstrap.Modal.getInstance(modalEl);
+      if (bsModal) {
+        bsModal.hide();
+      } else {
+        // Fallback to manual hiding
+        modalEl.style.display = 'none';
+        modalEl.classList.remove('show');
+        document.body.classList.remove('modal-open');
+
+        // Remove backdrop
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+          backdrop.remove();
+        }
+      }
+    } catch (error) {
+      console.error('Error hiding modal with Bootstrap:', error);
+
+      // Fallback to manual hiding
+      modalEl.style.display = 'none';
+      modalEl.classList.remove('show');
+      document.body.classList.remove('modal-open');
+
+      // Remove backdrop
+      const backdrop = document.querySelector('.modal-backdrop');
+      if (backdrop) {
+        backdrop.remove();
+      }
     }
   }
 
@@ -366,16 +432,20 @@ document.addEventListener('DOMContentLoaded', function() {
     toolsList.innerHTML = html;
 
     // Add event listeners to edit and delete buttons
-    document.querySelectorAll('.edit-tool').forEach(btn => {
+    console.log(`Setting up event listeners for ${document.querySelectorAll('.edit-tool').length} edit buttons`);
+    document.querySelectorAll('.edit-tool').forEach((btn, i) => {
       btn.addEventListener('click', function() {
         const index = parseInt(this.getAttribute('data-index'));
+        console.log(`Edit tool button clicked for index ${index}`);
         editTool(index);
       });
     });
 
-    document.querySelectorAll('.delete-tool').forEach(btn => {
+    console.log(`Setting up event listeners for ${document.querySelectorAll('.delete-tool').length} delete buttons`);
+    document.querySelectorAll('.delete-tool').forEach((btn, i) => {
       btn.addEventListener('click', function() {
         const index = parseInt(this.getAttribute('data-index'));
+        console.log(`Delete tool button clicked for index ${index}`);
         confirmDelete('tool', index);
       });
     });
@@ -743,22 +813,29 @@ document.addEventListener('DOMContentLoaded', function() {
   function confirmDelete(type, index) {
     let id = null;
 
+    console.log(`Confirm delete called for ${type} at index ${index}`);
+
     // Get the item ID based on type and index
     switch (type) {
       case 'tool':
+        console.log(`Tool data:`, tools[index]);
         id = tools[index]._id;
         break;
       case 'service':
+        console.log(`Service data:`, services[index]);
         id = services[index]._id;
         break;
       case 'project':
+        console.log(`Project data:`, projects[index]);
         id = projects[index]._id;
         break;
       case 'skill':
+        console.log(`Skill data:`, skills[index]);
         id = skills[index]._id;
         break;
     }
 
+    console.log(`Item ID to delete: ${id}`);
     currentItemToDelete = { type, index, id };
     showModal(deleteConfirmModalEl);
 
@@ -771,14 +848,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Delete item
   confirmDeleteBtn.addEventListener('click', function() {
-    if (!currentItemToDelete) return;
+    console.log('Confirm delete button clicked');
+
+    if (!currentItemToDelete) {
+      console.error('No item to delete!');
+      return;
+    }
 
     const { type, index, id } = currentItemToDelete;
+    console.log(`Deleting ${type} at index ${index} with ID ${id}`);
 
     // If we have an ID, use the API to delete
     if (id) {
+      console.log(`Using API to delete ${type} with ID ${id}`);
       deleteData(type + 's', id);
     } else {
+      console.log(`No ID available, using local deletion for ${type} at index ${index}`);
       // Fallback to local deletion if no ID is available
       switch (type) {
         case 'tool':
@@ -852,6 +937,10 @@ document.addEventListener('DOMContentLoaded', function() {
   function deleteData(type, itemId) {
     const endpoint = `${API_URL}/${type}/${itemId}`;
 
+    console.log(`Attempting to delete ${type} with ID: ${itemId}`);
+    console.log(`Endpoint: ${endpoint}`);
+    console.log(`Auth token: ${authToken ? 'Token exists' : 'No token'}`);
+
     fetch(endpoint, {
       method: 'DELETE',
       headers: {
@@ -860,12 +949,17 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     })
       .then(response => {
+        console.log(`Delete response status: ${response.status}`);
         if (!response.ok) {
-          throw new Error(`Error deleting ${type}: ${response.statusText}`);
+          return response.text().then(text => {
+            console.error(`Error response body: ${text}`);
+            throw new Error(`Error deleting ${type}: ${response.statusText}`);
+          });
         }
         return response.json();
       })
       .then(data => {
+        console.log(`Delete successful:`, data);
         alert(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully!`);
 
         // Reload the data to get the updated list
@@ -1097,6 +1191,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.getElementById('cancel-project-btn').addEventListener('click', function() {
     hideModal(projectModalEl);
+  });
+
+  document.getElementById('cancel-delete-btn').addEventListener('click', function() {
+    console.log('Cancel delete button clicked');
+    hideModal(deleteConfirmModalEl);
+  });
+
+  // Add event listeners for close buttons in modal headers
+  document.querySelectorAll('.modal .btn-close').forEach(btn => {
+    btn.addEventListener('click', function() {
+      console.log('Close button clicked in modal header');
+      const modal = this.closest('.modal');
+      if (modal) {
+        hideModal(modal);
+      }
+    });
   });
 
   document.getElementById('cancel-skill-group-btn').addEventListener('click', function() {

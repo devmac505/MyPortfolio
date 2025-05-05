@@ -1,0 +1,34 @@
+[
+  {
+    "name": "HTML5",
+    "image": "images/tools/html5.png"
+  },
+  {
+    "name": "CSS3",
+    "image": "images/tools/css3.png"
+  },
+  {
+    "name": "JavaScript",
+    "image": "images/tools/javascript.png"
+  },
+  {
+    "name": "React",
+    "image": "images/tools/react.png"
+  },
+  {
+    "name": "Node.js",
+    "image": "images/tools/nodejs.png"
+  },
+  {
+    "name": "MongoDB",
+    "image": "images/tools/mongodb.png"
+  },
+  {
+    "name": "Express",
+    "image": "images/tools/express.png"
+  },
+  {
+    "name": "Git",
+    "image": "images/tools/git.png"
+  }
+]
