@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // API base URL
-  const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
-  const SERVER_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
+  const API_URL = 'http://localhost:5000/api';
+  const SERVER_URL = 'http://localhost:5000';
 
   // Load data from JSON files
   loadTools();
@@ -62,17 +62,8 @@ document.addEventListener('DOMContentLoaded', function() {
       })
       .catch(error => {
         console.error('Error loading tools from API:', error);
-        // Fallback to mock data
-        fetch('./mock-data/tools.json')
-          .then(response => response.json())
-          .then(mockData => {
-            console.log('Using mock tools data');
-            renderTools(mockData);
-          })
-          .catch(mockError => {
-            console.error('Error loading mock tools data:', mockError);
-            document.getElementById('tools-container').innerHTML = '<div class="col-12 text-center py-5"><p>Error loading tools. Please try again later.</p></div>';
-          });
+        // Show error message
+        document.getElementById('tools-container').innerHTML = '<div class="col-12 text-center py-5"><p>Error loading tools. Please try again later.</p></div>';
       });
   }
 
@@ -90,17 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
       })
       .catch(error => {
         console.error('Error loading services from API:', error);
-        // Fallback to mock data
-        fetch('./mock-data/services.json')
-          .then(response => response.json())
-          .then(mockData => {
-            console.log('Using mock services data');
-            renderServices(mockData);
-          })
-          .catch(mockError => {
-            console.error('Error loading mock services data:', mockError);
-            document.getElementById('services-container').innerHTML = '<div class="col-12 text-center py-5"><p>Error loading services. Please try again later.</p></div>';
-          });
+        // Show error message
+        document.getElementById('services-container').innerHTML = '<div class="col-12 text-center py-5"><p>Error loading services. Please try again later.</p></div>';
       });
   }
 
@@ -118,17 +100,8 @@ document.addEventListener('DOMContentLoaded', function() {
       })
       .catch(error => {
         console.error('Error loading projects from API:', error);
-        // Fallback to mock data
-        fetch('./mock-data/projects.json')
-          .then(response => response.json())
-          .then(mockData => {
-            console.log('Using mock projects data');
-            renderProjects(mockData);
-          })
-          .catch(mockError => {
-            console.error('Error loading mock projects data:', mockError);
-            document.getElementById('projects-container').innerHTML = '<div class="col-12 text-center py-5"><p>Error loading projects. Please try again later.</p></div>';
-          });
+        // Show error message
+        document.getElementById('projects-container').innerHTML = '<div class="col-12 text-center py-5"><p>Error loading projects. Please try again later.</p></div>';
       });
   }
 
@@ -151,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
       rowTools.forEach(tool => {
         // Handle different image path formats
         let imagePath = tool.image;
+        let fallbackImage = 'images/tools/placeholder.svg';
 
         // If the image is a data URL, use it directly
         if (imagePath.startsWith('data:')) {
@@ -169,12 +143,15 @@ document.addEventListener('DOMContentLoaded', function() {
           imagePath = `./${imagePath}`;
         }
 
+        // Add error handling for images
+        const handleImageError = `onerror="this.onerror=null; this.src='${fallbackImage}'"`;
+
 
 
         html += `
           <div class="col-6 col-md-3 tool-item">
             <div class="tool-icon">
-              <img src="${imagePath}" alt="${tool.name}">
+              <img src="${imagePath}" alt="${tool.name}" ${handleImageError}>
             </div>
             <h5>${tool.name}</h5>
           </div>
@@ -252,6 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Handle different image path formats
       let imagePath = project.image;
+      let fallbackImage = 'images/tools/placeholder.svg';
 
       // If the image is a data URL, use it directly
       if (imagePath.startsWith('data:')) {
@@ -261,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
       else if (imagePath.startsWith('http')) {
         // Use the URL as is
       }
-      // If the image path starts with 'images/', prepend the server URL
+      // If the image path starts with 'images/'), prepend the server URL
       else if (imagePath.startsWith('images/')) {
         imagePath = `${SERVER_URL}/${imagePath}`;
       }
@@ -270,13 +248,16 @@ document.addEventListener('DOMContentLoaded', function() {
         imagePath = `./${imagePath}`;
       }
 
+      // Add error handling for images
+      const handleImageError = `onerror="this.onerror=null; this.src='${fallbackImage}'"`;
+
 
 
       html += `
         <div class="col-md-6 col-lg-3">
           <div class="project-card">
             <div class="project-img">
-              <img src="${imagePath}" alt="${project.title}">
+              <img src="${imagePath}" alt="${project.title}" ${handleImageError}>
               <div class="project-overlay">
                 <div class="project-links">
                   ${demoLink}
@@ -318,17 +299,8 @@ document.addEventListener('DOMContentLoaded', function() {
       })
       .catch(error => {
         console.error('Error loading skills from API:', error);
-        // Fallback to mock data
-        fetch('./mock-data/skills.json')
-          .then(response => response.json())
-          .then(mockData => {
-            console.log('Using mock skills data');
-            renderSkills(mockData);
-          })
-          .catch(mockError => {
-            console.error('Error loading mock skills data:', mockError);
-            document.getElementById('skills-container').innerHTML = '<div class="text-center py-5"><p>Error loading skills. Please try again later.</p></div>';
-          });
+        // Show error message
+        document.getElementById('skills-container').innerHTML = '<div class="text-center py-5"><p>Error loading skills. Please try again later.</p></div>';
       });
   }
 

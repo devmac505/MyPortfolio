@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const noteModal = document.getElementById('noteModal');
   const viewNoteModal = document.getElementById('viewNoteModal');
 
+  // Bootstrap Modal Instances
+  let noteModalInstance = null;
+  let viewNoteModalInstance = null;
+
   // For tracking the note being edited
   let currentEditingNoteId = null;
   let currentEditNote = null; // Store the current note being edited
@@ -55,31 +59,190 @@ document.addEventListener('DOMContentLoaded', function() {
       notePositions = {};
     }
 
+    // Make sure Bootstrap is loaded
+    if (typeof bootstrap === 'undefined') {
+      console.error('Bootstrap is not loaded. Please check your script includes.');
+      return;
+    }
+
     // Initialize Bootstrap modals
     if (noteModal) {
       try {
-        // Pre-initialize the modals to ensure they're ready
-        new bootstrap.Modal(noteModal);
+        // First, clean up any existing backdrops
+        const existingBackdrops = document.querySelectorAll('.modal-backdrop');
+        existingBackdrops.forEach(backdrop => backdrop.remove());
+
+        // Create modal instance
+        noteModalInstance = new bootstrap.Modal(noteModal, {
+          backdrop: true,
+          keyboard: true,
+          focus: true
+        });
+        console.log('Note modal instance created successfully');
+
+        // Add event listeners for modal events
+        noteModal.addEventListener('shown.bs.modal', function() {
+          console.log('Note modal shown');
+          const nicknameEl = document.getElementById('note-nickname');
+          if (nicknameEl) {
+            nicknameEl.focus();
+          }
+
+          // Ensure modal content is interactive
+          const modalContent = noteModal.querySelector('.modal-content');
+          if (modalContent) {
+            modalContent.style.zIndex = '1051';
+            modalContent.style.pointerEvents = 'auto';
+          }
+
+          // Make sure backdrop doesn't block interaction
+          const backdrops = document.querySelectorAll('.modal-backdrop');
+          backdrops.forEach(backdrop => {
+            backdrop.style.pointerEvents = 'none';
+          });
+        });
+
+        noteModal.addEventListener('hidden.bs.modal', function() {
+          console.log('Note modal hidden');
+          // Reset form fields when modal is hidden
+          const nicknameEl = document.getElementById('note-nickname');
+          const messageEl = document.getElementById('note-message');
+          if (nicknameEl) nicknameEl.value = '';
+          if (messageEl) messageEl.value = '';
+
+          // Reset editing state
+          currentEditingNoteId = null;
+
+          // Remove any stray backdrops
+          const backdrops = document.querySelectorAll('.modal-backdrop');
+          backdrops.forEach(backdrop => {
+            backdrop.remove();
+          });
+
+          // Remove modal-open class from body
+          document.body.classList.remove('modal-open');
+        });
 
         // Fix iOS Safari issues with modals
         noteModal.addEventListener('touchmove', function(e) {
           e.stopPropagation();
         }, { passive: false });
+
+        // Ensure the modal is properly styled
+        noteModal.style.zIndex = '1050';
+        const modalContent = noteModal.querySelector('.modal-content');
+        if (modalContent) {
+          modalContent.style.zIndex = '1051';
+          modalContent.style.pointerEvents = 'auto';
+        }
+
+        // Add click event listeners to close buttons
+        const closeButtons = noteModal.querySelectorAll('[data-bs-dismiss="modal"]');
+        closeButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            closeModal();
+          });
+        });
+
+        // Add click event listener to save button
+        const saveButton = document.getElementById('save-note-btn');
+        if (saveButton) {
+          saveButton.addEventListener('click', function() {
+            saveNote();
+          });
+        }
       } catch (error) {
         console.error('Error initializing note modal:', error);
+
+        // Set up manual event listeners as fallback
+        const closeButtons = noteModal.querySelectorAll('[data-bs-dismiss="modal"]');
+        closeButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            closeModal();
+          });
+        });
       }
     }
 
     if (viewNoteModal) {
       try {
-        new bootstrap.Modal(viewNoteModal);
+        // First, clean up any existing backdrops
+        const existingBackdrops = document.querySelectorAll('.modal-backdrop');
+        existingBackdrops.forEach(backdrop => backdrop.remove());
+
+        // Create modal instance
+        viewNoteModalInstance = new bootstrap.Modal(viewNoteModal, {
+          backdrop: true,
+          keyboard: true,
+          focus: true
+        });
+        console.log('View note modal instance created successfully');
+
+        // Add event listeners for modal events
+        viewNoteModal.addEventListener('shown.bs.modal', function() {
+          console.log('View note modal shown');
+          const closeBtn = document.getElementById('close-view-btn');
+          if (closeBtn) {
+            closeBtn.focus();
+          }
+
+          // Ensure modal content is interactive
+          const modalContent = viewNoteModal.querySelector('.modal-content');
+          if (modalContent) {
+            modalContent.style.zIndex = '1051';
+            modalContent.style.pointerEvents = 'auto';
+          }
+
+          // Make sure backdrop doesn't block interaction
+          const backdrops = document.querySelectorAll('.modal-backdrop');
+          backdrops.forEach(backdrop => {
+            backdrop.style.pointerEvents = 'none';
+          });
+        });
+
+        viewNoteModal.addEventListener('hidden.bs.modal', function() {
+          console.log('View note modal hidden');
+
+          // Remove any stray backdrops
+          const backdrops = document.querySelectorAll('.modal-backdrop');
+          backdrops.forEach(backdrop => {
+            backdrop.remove();
+          });
+
+          // Remove modal-open class from body
+          document.body.classList.remove('modal-open');
+        });
 
         // Fix iOS Safari issues with modals
         viewNoteModal.addEventListener('touchmove', function(e) {
           e.stopPropagation();
         }, { passive: false });
+
+        // Ensure the modal is properly styled
+        viewNoteModal.style.zIndex = '1050';
+        const modalContent = viewNoteModal.querySelector('.modal-content');
+        if (modalContent) {
+          modalContent.style.zIndex = '1051';
+          modalContent.style.pointerEvents = 'auto';
+        }
+
+        // Add click event listeners to close buttons
+        const closeButtons = viewNoteModal.querySelectorAll('[data-bs-dismiss="modal"]');
+        closeButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            closeModal();
+          });
+        });
       } catch (error) {
         console.error('Error initializing view note modal:', error);
+
+        // Set up manual event listeners as fallback
+        const closeButtons = viewNoteModal.querySelectorAll('[data-bs-dismiss="modal"]');
+        closeButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            closeModal();
+          });
+        });
       }
     }
 
@@ -120,47 +283,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
 
-    // Set up modal events
-    if (noteModal) {
-      // Add event listener to close button
-      const closeNoteBtn = document.getElementById('close-note-btn');
-      if (closeNoteBtn) {
-        closeNoteBtn.addEventListener('click', function(event) {
-          event.preventDefault();
-          closeModal();
-        });
-      }
-
-      // Add event listener to close button in header
-      const closeHeaderBtn = noteModal.querySelector('.btn-close');
-      if (closeHeaderBtn) {
-        closeHeaderBtn.addEventListener('click', function(event) {
-          event.preventDefault();
-          closeModal();
-        });
-      }
-    }
-
-    if (viewNoteModal) {
-      // Add event listener to close button
-      const closeViewBtn = document.getElementById('close-view-btn');
-      if (closeViewBtn) {
-        closeViewBtn.addEventListener('click', function(event) {
-          event.preventDefault();
-          closeModal();
-        });
-      }
-
-      // Add event listener to close button in header
-      const closeHeaderBtn = viewNoteModal.querySelector('.btn-close');
-      if (closeHeaderBtn) {
-        closeHeaderBtn.addEventListener('click', function(event) {
-          event.preventDefault();
-          closeModal();
-        });
-      }
-    }
-
     // Color select
     const colorSelect = document.getElementById('note-color');
     if (colorSelect) {
@@ -168,10 +290,36 @@ document.addEventListener('DOMContentLoaded', function() {
         updateColorPreview(this.value);
       });
     }
+
+    // Add emergency escape key handler
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        // Try to close any open modals
+        if (noteModalInstance) {
+          noteModalInstance.hide();
+        }
+        if (viewNoteModalInstance) {
+          viewNoteModalInstance.hide();
+        }
+
+        // Remove any stray backdrops
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => {
+          backdrop.remove();
+        });
+
+        // Remove modal-open class from body
+        document.body.classList.remove('modal-open');
+      }
+    });
   }
 
   // Open add note modal
   function openAddNoteModal() {
+    // First, clean up any existing backdrops to avoid duplicates
+    const existingBackdrops = document.querySelectorAll('.modal-backdrop');
+    existingBackdrops.forEach(backdrop => backdrop.remove());
+
     // Reset form
     const nicknameEl = document.getElementById('note-nickname');
     const messageEl = document.getElementById('note-message');
@@ -191,41 +339,156 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update color preview
     updateColorPreview('yellow');
 
-    // Show modal directly without backdrop
+    // Show modal using Bootstrap's API
     if (noteModal) {
-      // Show the modal directly
-      noteModal.style.display = 'block';
-      noteModal.classList.add('show');
+      try {
+        // First try using Bootstrap's API
+        if (noteModalInstance) {
+          // Dispose the existing instance to avoid conflicts
+          noteModalInstance.dispose();
+        }
 
-      // Focus on the nickname field after a delay
+        // Create a new instance
+        noteModalInstance = new bootstrap.Modal(noteModal, {
+          backdrop: true,
+          keyboard: true,
+          focus: true
+        });
+
+        // Show the modal
+        noteModalInstance.show();
+        console.log('Opening add note modal with Bootstrap instance');
+
+        // Ensure the modal is visible and interactive
+        noteModal.style.zIndex = '1050';
+        const modalContent = noteModal.querySelector('.modal-content');
+        if (modalContent) {
+          modalContent.style.zIndex = '1051';
+          modalContent.style.pointerEvents = 'auto';
+        }
+
+        // Make sure body has modal-open class
+        document.body.classList.add('modal-open');
+
+      } catch (error) {
+        console.error('Error showing note modal with Bootstrap:', error);
+
+        // Manual fallback if Bootstrap API fails
+        noteModal.style.display = 'block';
+        noteModal.classList.add('show');
+        document.body.classList.add('modal-open');
+        console.log('Using manual fallback to show modal');
+
+        // Ensure the modal is visible and interactive
+        noteModal.style.zIndex = '1050';
+        const modalContent = noteModal.querySelector('.modal-content');
+        if (modalContent) {
+          modalContent.style.zIndex = '1051';
+          modalContent.style.pointerEvents = 'auto';
+        }
+
+        // Add backdrop manually if it doesn't exist
+        if (!document.querySelector('.modal-backdrop')) {
+          const backdrop = document.createElement('div');
+          backdrop.className = 'modal-backdrop fade show';
+          backdrop.style.pointerEvents = 'none'; // Allow clicks to pass through
+          document.body.appendChild(backdrop);
+        }
+      }
+
+      // Focus on the nickname field after a short delay
       setTimeout(() => {
         if (nicknameEl) {
-          // Then focus on the input field
           nicknameEl.focus();
+          console.log('Focus set on nickname field');
         }
       }, 300);
+    } else {
+      console.error('Note modal element not found');
     }
   }
 
   // Close modal
   function closeModal() {
-    // Hide note modal manually
-    if (noteModal) {
-      noteModal.style.display = 'none';
-      noteModal.classList.remove('show');
-    }
+    console.log('Closing modals');
 
-    // Hide view modal manually
-    if (viewNoteModal) {
-      viewNoteModal.style.display = 'none';
-      viewNoteModal.classList.remove('show');
-    }
-
-    // Remove any existing backdrop
-    const backdrop = document.querySelector('.modal-backdrop');
-    if (backdrop) {
+    // First, ensure we clean up any existing backdrops
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(backdrop => {
       backdrop.remove();
+    });
+
+    // Hide note modal using Bootstrap's API
+    if (noteModal) {
+      try {
+        if (noteModalInstance) {
+          noteModalInstance.hide();
+          console.log('Hiding note modal with Bootstrap instance');
+
+          // Force cleanup after a short delay
+          setTimeout(() => {
+            // Remove any stray backdrops again
+            const lateBackdrops = document.querySelectorAll('.modal-backdrop');
+            lateBackdrops.forEach(backdrop => {
+              backdrop.remove();
+            });
+
+            // Ensure modal is hidden
+            noteModal.style.display = 'none';
+            noteModal.classList.remove('show');
+
+            // Remove modal-open class from body
+            document.body.classList.remove('modal-open');
+          }, 300);
+        } else {
+          // Manual hiding if no instance
+          noteModal.style.display = 'none';
+          noteModal.classList.remove('show');
+          document.body.classList.remove('modal-open');
+          console.log('Manually hiding note modal');
+        }
+      } catch (error) {
+        console.error('Error hiding note modal:', error);
+
+        // Manual fallback if the Bootstrap API fails
+        noteModal.style.display = 'none';
+        noteModal.classList.remove('show');
+        document.body.classList.remove('modal-open');
+        console.log('Using fallback to hide modal');
+      }
     }
+
+    // Hide view modal using Bootstrap's API
+    if (viewNoteModal) {
+      try {
+        if (viewNoteModalInstance) {
+          viewNoteModalInstance.hide();
+          console.log('Hiding view modal with Bootstrap instance');
+
+          // Force cleanup after a short delay
+          setTimeout(() => {
+            // Ensure modal is hidden
+            viewNoteModal.style.display = 'none';
+            viewNoteModal.classList.remove('show');
+          }, 300);
+        } else {
+          // Manual hiding if no instance
+          viewNoteModal.style.display = 'none';
+          viewNoteModal.classList.remove('show');
+          console.log('Manually hiding view modal');
+        }
+      } catch (error) {
+        console.error('Error hiding view modal:', error);
+
+        // Manual fallback if the Bootstrap API fails
+        viewNoteModal.style.display = 'none';
+        viewNoteModal.classList.remove('show');
+        console.log('Using fallback to hide view modal');
+      }
+    }
+
+    // Remove modal-open class from body
+    document.body.classList.remove('modal-open');
 
     // Reset form fields
     const nicknameEl = document.getElementById('note-nickname');
@@ -235,6 +498,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Reset editing state
     currentEditingNoteId = null;
+
+    // Final cleanup to ensure everything is reset
+    setTimeout(() => {
+      // Remove any stray backdrops one last time
+      const finalBackdrops = document.querySelectorAll('.modal-backdrop');
+      finalBackdrops.forEach(backdrop => {
+        backdrop.remove();
+      });
+
+      // Ensure body doesn't have modal-open class
+      document.body.classList.remove('modal-open');
+    }, 500);
   }
 
   // Save note
@@ -545,22 +820,52 @@ document.addEventListener('DOMContentLoaded', function() {
         dateEl.textContent = formattedDate;
       }
 
-      // Show modal manually without backdrop
+      // Show modal using Bootstrap's API
       if (viewNoteModal) {
-        // Show the modal directly
-        viewNoteModal.style.display = 'block';
-        viewNoteModal.classList.add('show');
+        try {
+          // First try using Bootstrap's API
+          if (viewNoteModalInstance) {
+            viewNoteModalInstance.show();
+            console.log('Opening view note modal with Bootstrap instance');
+          } else {
+            // Try to create a new instance
+            viewNoteModalInstance = new bootstrap.Modal(viewNoteModal, {
+              backdrop: true,
+              keyboard: true,
+              focus: true
+            });
+            viewNoteModalInstance.show();
+            console.log('Created new Bootstrap modal instance for view');
+          }
+        } catch (error) {
+          console.error('Error showing view note modal with Bootstrap:', error);
 
-        // Don't add modal-open class to body to prevent scrolling issues
-        // document.body.classList.add('modal-open');
+          // Manual fallback if Bootstrap API fails
+          viewNoteModal.style.display = 'block';
+          viewNoteModal.classList.add('show');
+          document.body.classList.add('modal-open');
+          console.log('Using manual fallback to show view modal');
 
-        // Don't add backdrop
+          // Ensure the modal is visible and interactive
+          viewNoteModal.style.zIndex = '1050';
+          const modalContent = viewNoteModal.querySelector('.modal-content');
+          if (modalContent) {
+            modalContent.style.zIndex = '1051';
+            modalContent.style.pointerEvents = 'auto';
+          }
+
+          // Add backdrop manually if it doesn't exist
+          if (!document.querySelector('.modal-backdrop')) {
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            document.body.appendChild(backdrop);
+          }
+        }
 
         // Focus on the close button after a delay
         setTimeout(() => {
           const closeBtn = document.getElementById('close-view-btn');
           if (closeBtn) {
-            // Then focus on the close button
             closeBtn.focus();
             console.log('Focus set on close button in view modal');
           }
@@ -602,16 +907,47 @@ document.addEventListener('DOMContentLoaded', function() {
       // Store the current note being edited
       currentEditNote = note;
 
-      // Show modal manually without backdrop
+      // Show modal using Bootstrap's API
       if (noteModal) {
-        // Show the modal directly
-        noteModal.style.display = 'block';
-        noteModal.classList.add('show');
+        try {
+          // First try using Bootstrap's API
+          if (noteModalInstance) {
+            noteModalInstance.show();
+            console.log('Opening edit note modal with Bootstrap instance');
+          } else {
+            // Try to create a new instance
+            noteModalInstance = new bootstrap.Modal(noteModal, {
+              backdrop: true,
+              keyboard: true,
+              focus: true
+            });
+            noteModalInstance.show();
+            console.log('Created new Bootstrap modal instance for edit');
+          }
+        } catch (error) {
+          console.error('Error showing note modal for editing with Bootstrap:', error);
 
-        // Don't add modal-open class to body to prevent scrolling issues
-        // document.body.classList.add('modal-open');
+          // Manual fallback if Bootstrap API fails
+          noteModal.style.display = 'block';
+          noteModal.classList.add('show');
+          document.body.classList.add('modal-open');
+          console.log('Using manual fallback to show edit modal');
 
-        // Don't add backdrop
+          // Ensure the modal is visible and interactive
+          noteModal.style.zIndex = '1050';
+          const modalContent = noteModal.querySelector('.modal-content');
+          if (modalContent) {
+            modalContent.style.zIndex = '1051';
+            modalContent.style.pointerEvents = 'auto';
+          }
+
+          // Add backdrop manually if it doesn't exist
+          if (!document.querySelector('.modal-backdrop')) {
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            document.body.appendChild(backdrop);
+          }
+        }
 
         // Focus on the message field after a delay
         setTimeout(() => {

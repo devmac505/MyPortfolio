@@ -14,9 +14,15 @@ const app = express();
 app.use(cors({
   origin: '*', // Allow all origins
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
-app.use(express.json());
+
+// Add CORS preflight for uploads
+app.options('/api/uploads', cors());
+// Increase JSON payload limit to 50MB for image uploads
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Serve static files
 const rootDir = path.join(__dirname, '..');
@@ -43,22 +49,28 @@ const routes = {
   services: './routes/services',
   projects: './routes/projects',
   skills: './routes/skills',
-  notes: './routes/notes'
+  notes: './routes/notes',
+  uploads: './routes/uploads'
 };
 
 // Load and use routes
 Object.entries(routes).forEach(([name, path]) => {
   try {
+    console.log(`Loading route: ${name} from ${path}`);
     const router = require(path);
-    app.use(`/api/${name === 'auth' ? 'auth' : name}`, router);
+    const routePath = `/api/${name === 'auth' ? 'auth' : name}`;
+    console.log(`Registering route: ${routePath}`);
+    app.use(routePath, router);
+    console.log(`Successfully registered route: ${routePath}`);
   } catch (err) {
     console.error(`Error loading ${name} routes:`, err.message);
+    console.error(err.stack);
   }
 });
 
-// Root route
+// Root route - serve the index.html file
 app.get('/', (req, res) => {
-  res.send('Portfolio API is running');
+  res.sendFile(path.join(rootDir, 'index.html'));
 });
 
 
