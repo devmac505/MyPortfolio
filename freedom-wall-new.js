@@ -72,9 +72,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const existingBackdrops = document.querySelectorAll('.modal-backdrop');
         existingBackdrops.forEach(backdrop => backdrop.remove());
 
-        // Create modal instance
+        // Create modal instance without backdrop
         noteModalInstance = new bootstrap.Modal(noteModal, {
-          backdrop: true,
+          backdrop: false,
           keyboard: true,
           focus: true
         });
@@ -170,9 +170,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const existingBackdrops = document.querySelectorAll('.modal-backdrop');
         existingBackdrops.forEach(backdrop => backdrop.remove());
 
-        // Create modal instance
+        // Create modal instance without backdrop
         viewNoteModalInstance = new bootstrap.Modal(viewNoteModal, {
-          backdrop: true,
+          backdrop: false,
           keyboard: true,
           focus: true
         });
@@ -348,9 +348,9 @@ document.addEventListener('DOMContentLoaded', function() {
           noteModalInstance.dispose();
         }
 
-        // Create a new instance
+        // Create a new instance without backdrop
         noteModalInstance = new bootstrap.Modal(noteModal, {
-          backdrop: true,
+          backdrop: false,
           keyboard: true,
           focus: true
         });
@@ -387,13 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
           modalContent.style.pointerEvents = 'auto';
         }
 
-        // Add backdrop manually if it doesn't exist
-        if (!document.querySelector('.modal-backdrop')) {
-          const backdrop = document.createElement('div');
-          backdrop.className = 'modal-backdrop fade show';
-          backdrop.style.pointerEvents = 'none'; // Allow clicks to pass through
-          document.body.appendChild(backdrop);
-        }
+        // No backdrop needed
       }
 
       // Focus on the nickname field after a short delay
@@ -828,9 +822,9 @@ document.addEventListener('DOMContentLoaded', function() {
             viewNoteModalInstance.show();
             console.log('Opening view note modal with Bootstrap instance');
           } else {
-            // Try to create a new instance
+            // Try to create a new instance without backdrop
             viewNoteModalInstance = new bootstrap.Modal(viewNoteModal, {
-              backdrop: true,
+              backdrop: false,
               keyboard: true,
               focus: true
             });
@@ -854,12 +848,7 @@ document.addEventListener('DOMContentLoaded', function() {
             modalContent.style.pointerEvents = 'auto';
           }
 
-          // Add backdrop manually if it doesn't exist
-          if (!document.querySelector('.modal-backdrop')) {
-            const backdrop = document.createElement('div');
-            backdrop.className = 'modal-backdrop fade show';
-            document.body.appendChild(backdrop);
-          }
+          // No backdrop needed
         }
 
         // Focus on the close button after a delay
@@ -915,9 +904,9 @@ document.addEventListener('DOMContentLoaded', function() {
             noteModalInstance.show();
             console.log('Opening edit note modal with Bootstrap instance');
           } else {
-            // Try to create a new instance
+            // Try to create a new instance without backdrop
             noteModalInstance = new bootstrap.Modal(noteModal, {
-              backdrop: true,
+              backdrop: false,
               keyboard: true,
               focus: true
             });
@@ -941,12 +930,7 @@ document.addEventListener('DOMContentLoaded', function() {
             modalContent.style.pointerEvents = 'auto';
           }
 
-          // Add backdrop manually if it doesn't exist
-          if (!document.querySelector('.modal-backdrop')) {
-            const backdrop = document.createElement('div');
-            backdrop.className = 'modal-backdrop fade show';
-            document.body.appendChild(backdrop);
-          }
+          // No backdrop needed
         }
 
         // Focus on the message field after a delay
