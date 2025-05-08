@@ -10,7 +10,7 @@ window.confirmDelete = null;
 document.addEventListener('DOMContentLoaded', function() {
 
   // API base URL - works for both local and production environments
-  const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
+  const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : 'https://myportfolio-backend-m49z.onrender.com/api';
   const AUTH_URL = `${API_URL}/auth`;
 
   // Initialize the login page
