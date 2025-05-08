@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // API base URL
-  const API_URL = 'http://localhost:5000/api';
-  const SERVER_URL = 'http://localhost:5000';
+  const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : 'https://myportfolio-backend-m49z.onrender.com/api';
+  const SERVER_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://myportfolio-backend-m49z.onrender.com';
 
   // Load data from JSON files
   loadTools();
