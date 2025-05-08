@@ -1,6 +1,17 @@
 // Dashboard JavaScript
+
+// Global variables for function access from HTML
+window.editTool = null;
+window.editService = null;
+window.editProject = null;
+window.editSkillGroup = null;
+window.confirmDelete = null;
+
 document.addEventListener('DOMContentLoaded', function() {
 
+  // API base URL - works for both local and production environments
+  const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
+  const AUTH_URL = `${API_URL}/auth`;
 
   // Initialize the login page
   checkAuth();
@@ -8,6 +19,17 @@ document.addEventListener('DOMContentLoaded', function() {
   // Authentication variables
   let isAuthenticated = false;
   let authToken = null;
+
+  // Create alert container for notifications if it doesn't exist
+  if (!document.getElementById('alert-container')) {
+    const alertContainer = document.createElement('div');
+    alertContainer.id = 'alert-container';
+    alertContainer.style.position = 'fixed';
+    alertContainer.style.top = '20px';
+    alertContainer.style.right = '20px';
+    alertContainer.style.zIndex = '9999';
+    document.body.appendChild(alertContainer);
+  }
 
   // DOM Elements
   const loginContainer = document.getElementById('login-container');
@@ -55,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (token) {
       console.log('Found token in session storage');
       // Verify the token is valid by making a test request
-      fetch(`${API_URL}/test-auth`, {
+      fetch(`${API_URL}/auth/test-auth`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -111,16 +133,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Show login credentials helper
+  // Show login page
   function showLoginHelp() {
-    const usernameField = document.getElementById('username');
-    const passwordField = document.getElementById('password');
-
-    // Add placeholder text instead of value to prevent saving
-    usernameField.placeholder = 'Username';
-    passwordField.placeholder = 'Password';
-
-    // No hint text is added anymore
+    // No hints or placeholders needed
+    console.log('Showing login page');
   }
 
   // Custom modal functions
@@ -132,10 +148,60 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log(`Showing modal:`, modalEl.id);
 
-    // Show the modal using Bootstrap's modal method if available
+    // Ensure all form fields are enabled
+    const formFields = modalEl.querySelectorAll('input, textarea, select, button');
+    formFields.forEach(field => {
+      field.disabled = false;
+      field.readOnly = false;
+      field.style.pointerEvents = 'auto';
+    });
+
+    // Show the modal using Bootstrap's modal method
     try {
-      const bsModal = new bootstrap.Modal(modalEl);
+      // First, make sure any existing instance is disposed
+      const existingModal = bootstrap.Modal.getInstance(modalEl);
+      if (existingModal) {
+        existingModal.dispose();
+      }
+
+      // Create a new modal instance with proper options
+      const bsModal = new bootstrap.Modal(modalEl, {
+        backdrop: true,
+        keyboard: true,
+        focus: true
+      });
+
+      // Show the modal
       bsModal.show();
+
+      // Ensure body has modal-open class
+      document.body.classList.add('modal-open');
+
+      // Make sure the modal is visible and interactive
+      modalEl.style.display = 'block';
+      modalEl.style.pointerEvents = 'auto';
+      modalEl.style.zIndex = '1050';
+
+      // Ensure the modal content is interactive
+      const modalContent = modalEl.querySelector('.modal-content');
+      if (modalContent) {
+        modalContent.style.pointerEvents = 'auto';
+      }
+
+      // Ensure the modal footer is centered
+      const modalFooter = modalEl.querySelector('.modal-footer');
+      if (modalFooter) {
+        modalFooter.style.display = 'flex';
+        modalFooter.style.justifyContent = 'center';
+        modalFooter.style.gap = '15px';
+      }
+
+      // Add backdrop if it doesn't exist
+      if (!document.querySelector('.modal-backdrop')) {
+        const backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop fade show';
+        document.body.appendChild(backdrop);
+      }
     } catch (error) {
       console.error('Error showing modal with Bootstrap:', error);
 
@@ -144,10 +210,20 @@ document.addEventListener('DOMContentLoaded', function() {
       modalEl.classList.add('show');
       document.body.classList.add('modal-open');
 
+      // Ensure the modal footer is centered
+      const modalFooter = modalEl.querySelector('.modal-footer');
+      if (modalFooter) {
+        modalFooter.style.display = 'flex';
+        modalFooter.style.justifyContent = 'center';
+        modalFooter.style.gap = '15px';
+      }
+
       // Add backdrop
-      const backdrop = document.createElement('div');
-      backdrop.className = 'modal-backdrop fade show';
-      document.body.appendChild(backdrop);
+      if (!document.querySelector('.modal-backdrop')) {
+        const backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop fade show';
+        document.body.appendChild(backdrop);
+      }
     }
   }
 
@@ -276,12 +352,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (usernameField) {
       usernameField.value = '';
-      usernameField.placeholder = 'Username';
     }
 
     if (passwordField) {
       passwordField.value = '';
-      passwordField.placeholder = 'Password';
     }
 
     // Remove any existing help text
@@ -322,9 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSkills();
   }
 
-  // API base URL
-  const API_URL = 'http://localhost:5000/api';
-  const AUTH_URL = `${API_URL}/auth`;
+
 
   // Load tools data
   function loadTools() {
@@ -400,6 +472,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Render tools
   function renderTools() {
+    if (!toolsList) {
+      console.error('Tools list element not found');
+      return;
+    }
+
     if (tools.length === 0) {
       toolsList.innerHTML = '<div class="col-12 text-center py-5"><p>No tools found. Add your first tool!</p></div>';
       return;
@@ -411,16 +488,16 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="col-md-6 col-lg-3 mb-4">
           <div class="item-card">
             <div class="item-img">
-              <img src="../${tool.image}" alt="${tool.name}">
+              <img src="${tool.image.startsWith('data:') ? tool.image : '../' + tool.image}" alt="${tool.name}">
             </div>
             <div class="item-body">
               <h5 class="item-title">${tool.name}</h5>
-              <div class="item-actions">
-                <button class="btn btn-sm btn-primary btn-icon edit-tool" data-index="${index}">
-                  <i class="bi bi-pencil"></i>
+              <div class="item-actions" style="display: flex; justify-content: center; margin-top: 15px; gap: 10px;">
+                <button class="btn btn-primary edit-tool" data-index="${index}" title="Edit Tool" style="min-width: 80px;" onclick="editTool(${index}); return false;">
+                  <i class="bi bi-pencil-fill"></i> Edit
                 </button>
-                <button class="btn btn-sm btn-danger btn-icon delete-tool" data-index="${index}">
-                  <i class="bi bi-trash"></i>
+                <button class="btn btn-danger delete-tool" data-index="${index}" title="Delete Tool" style="min-width: 80px;" onclick="confirmDelete('tool', ${index}); return false;">
+                  <i class="bi bi-trash-fill"></i> Delete
                 </button>
               </div>
             </div>
@@ -429,30 +506,68 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
     });
 
-    toolsList.innerHTML = html;
+    try {
+      toolsList.innerHTML = html;
+    } catch (error) {
+      console.error('Error updating tools list HTML:', error);
+    }
 
     // Add event listeners to edit and delete buttons
     console.log(`Setting up event listeners for ${document.querySelectorAll('.edit-tool').length} edit buttons`);
+
+    // Add event listeners directly without cloning
     document.querySelectorAll('.edit-tool').forEach((btn, i) => {
-      btn.addEventListener('click', function() {
-        const index = parseInt(this.getAttribute('data-index'));
-        console.log(`Edit tool button clicked for index ${index}`);
-        editTool(index);
-      });
+      // Remove existing event listeners by cloning the button itself
+      const newBtn = btn.cloneNode(true);
+      if (btn.parentNode) {
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        // Add new event listener
+        newBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const index = parseInt(this.getAttribute('data-index'));
+          console.log(`Edit tool button clicked for index ${index}`);
+          editTool(index);
+        });
+
+        // Add a visual indicator that the button is clickable
+        newBtn.style.cursor = 'pointer';
+        console.log(`Added event listener to edit button ${i}`);
+      }
     });
 
-    console.log(`Setting up event listeners for ${document.querySelectorAll('.delete-tool').length} delete buttons`);
     document.querySelectorAll('.delete-tool').forEach((btn, i) => {
-      btn.addEventListener('click', function() {
-        const index = parseInt(this.getAttribute('data-index'));
-        console.log(`Delete tool button clicked for index ${index}`);
-        confirmDelete('tool', index);
-      });
+      // Remove existing event listeners by cloning the button itself
+      const newBtn = btn.cloneNode(true);
+      if (btn.parentNode) {
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        // Add new event listener
+        newBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const index = parseInt(this.getAttribute('data-index'));
+          console.log(`Delete tool button clicked for index ${index}`);
+          confirmDelete('tool', index);
+        });
+
+        // Add a visual indicator that the button is clickable
+        newBtn.style.cursor = 'pointer';
+        console.log(`Added event listener to delete button ${i}`);
+      }
     });
+
+    console.log('All event listeners have been set up');
   }
 
   // Render services
   function renderServices() {
+    if (!servicesList) {
+      console.error('Services list element not found');
+      return;
+    }
+
     if (services.length === 0) {
       servicesList.innerHTML = '<div class="col-12 text-center py-5"><p>No services found. Add your first service!</p></div>';
       return;
@@ -469,12 +584,12 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <h5 class="item-title">${service.title}</h5>
               <p class="item-text">${service.description}</p>
-              <div class="item-actions">
-                <button class="btn btn-sm btn-primary btn-icon edit-service" data-index="${index}">
-                  <i class="bi bi-pencil"></i>
+              <div class="item-actions" style="display: flex; justify-content: center; margin-top: 15px; gap: 10px;">
+                <button class="btn btn-primary edit-service" data-index="${index}" title="Edit Service" style="min-width: 80px;" onclick="editService(${index}); return false;">
+                  <i class="bi bi-pencil-fill"></i> Edit
                 </button>
-                <button class="btn btn-sm btn-danger btn-icon delete-service" data-index="${index}">
-                  <i class="bi bi-trash"></i>
+                <button class="btn btn-danger delete-service" data-index="${index}" title="Delete Service" style="min-width: 80px;" onclick="confirmDelete('service', ${index}); return false;">
+                  <i class="bi bi-trash-fill"></i> Delete
                 </button>
               </div>
             </div>
@@ -483,26 +598,61 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
     });
 
-    servicesList.innerHTML = html;
+    try {
+      servicesList.innerHTML = html;
+    } catch (error) {
+      console.error('Error updating services list HTML:', error);
+    }
 
     // Add event listeners to edit and delete buttons
-    document.querySelectorAll('.edit-service').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const index = parseInt(this.getAttribute('data-index'));
-        editService(index);
-      });
+    document.querySelectorAll('.edit-service').forEach((btn, i) => {
+      // Remove existing event listeners by cloning the button itself
+      const newBtn = btn.cloneNode(true);
+      if (btn.parentNode) {
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        // Add new event listener
+        newBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const index = parseInt(this.getAttribute('data-index'));
+          console.log(`Edit service button clicked for index ${index}`);
+          editService(index);
+        });
+
+        // Add a visual indicator that the button is clickable
+        newBtn.style.cursor = 'pointer';
+      }
     });
 
-    document.querySelectorAll('.delete-service').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const index = parseInt(this.getAttribute('data-index'));
-        confirmDelete('service', index);
-      });
+    document.querySelectorAll('.delete-service').forEach((btn, i) => {
+      // Remove existing event listeners by cloning the button itself
+      const newBtn = btn.cloneNode(true);
+      if (btn.parentNode) {
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        // Add new event listener
+        newBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const index = parseInt(this.getAttribute('data-index'));
+          console.log(`Delete service button clicked for index ${index}`);
+          confirmDelete('service', index);
+        });
+
+        // Add a visual indicator that the button is clickable
+        newBtn.style.cursor = 'pointer';
+      }
     });
   }
 
   // Render projects
   function renderProjects() {
+    if (!projectsList) {
+      console.error('Projects list element not found');
+      return;
+    }
+
     if (projects.length === 0) {
       projectsList.innerHTML = '<div class="col-12 text-center py-5"><p>No projects found. Add your first project!</p></div>';
       return;
@@ -514,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="col-md-6 col-lg-4 mb-4">
           <div class="item-card">
             <div class="item-img">
-              <img src="../${project.image}" alt="${project.title}">
+              <img src="${project.image.startsWith('data:') ? project.image : '../' + project.image}" alt="${project.title}">
             </div>
             <div class="item-body">
               <h5 class="item-title">${project.title}</h5>
@@ -522,12 +672,12 @@ document.addEventListener('DOMContentLoaded', function() {
               <div class="item-tags mb-3">
                 ${project.tags.map(tag => `<span class="badge bg-primary bg-opacity-10 text-primary me-1">${tag}</span>`).join('')}
               </div>
-              <div class="item-actions">
-                <button class="btn btn-sm btn-primary btn-icon edit-project" data-index="${index}">
-                  <i class="bi bi-pencil"></i>
+              <div class="item-actions" style="display: flex; justify-content: center; margin-top: 15px; gap: 10px;">
+                <button class="btn btn-primary edit-project" data-index="${index}" title="Edit Project" style="min-width: 80px;" onclick="editProject(${index}); return false;">
+                  <i class="bi bi-pencil-fill"></i> Edit
                 </button>
-                <button class="btn btn-sm btn-danger btn-icon delete-project" data-index="${index}">
-                  <i class="bi bi-trash"></i>
+                <button class="btn btn-danger delete-project" data-index="${index}" title="Delete Project" style="min-width: 80px;" onclick="confirmDelete('project', ${index}); return false;">
+                  <i class="bi bi-trash-fill"></i> Delete
                 </button>
               </div>
             </div>
@@ -536,21 +686,51 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
     });
 
-    projectsList.innerHTML = html;
+    try {
+      projectsList.innerHTML = html;
+    } catch (error) {
+      console.error('Error updating projects list HTML:', error);
+    }
 
     // Add event listeners to edit and delete buttons
-    document.querySelectorAll('.edit-project').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const index = parseInt(this.getAttribute('data-index'));
-        editProject(index);
-      });
+    document.querySelectorAll('.edit-project').forEach((btn, i) => {
+      // Remove existing event listeners by cloning the button itself
+      const newBtn = btn.cloneNode(true);
+      if (btn.parentNode) {
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        // Add new event listener
+        newBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const index = parseInt(this.getAttribute('data-index'));
+          console.log(`Edit project button clicked for index ${index}`);
+          editProject(index);
+        });
+
+        // Add a visual indicator that the button is clickable
+        newBtn.style.cursor = 'pointer';
+      }
     });
 
-    document.querySelectorAll('.delete-project').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const index = parseInt(this.getAttribute('data-index'));
-        confirmDelete('project', index);
-      });
+    document.querySelectorAll('.delete-project').forEach((btn, i) => {
+      // Remove existing event listeners by cloning the button itself
+      const newBtn = btn.cloneNode(true);
+      if (btn.parentNode) {
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        // Add new event listener
+        newBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const index = parseInt(this.getAttribute('data-index'));
+          console.log(`Delete project button clicked for index ${index}`);
+          confirmDelete('project', index);
+        });
+
+        // Add a visual indicator that the button is clickable
+        newBtn.style.cursor = 'pointer';
+      }
     });
   }
 
@@ -608,12 +788,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Edit tool
   function editTool(index) {
+    console.log(`Editing tool at index ${index}`);
+
+    if (index < 0 || index >= tools.length) {
+      console.error(`Invalid tool index: ${index}`);
+      showErrorMessage('Error: Invalid tool index');
+      return;
+    }
+
     const tool = tools[index];
+    console.log(`Tool data:`, tool);
+
+    // Update modal title
     document.getElementById('toolModalLabel').textContent = 'Edit Tool';
+
+    // Set form values
     document.getElementById('tool-id').value = index;
     document.getElementById('tool-name').value = tool.name;
     document.getElementById('tool-image').value = tool.image;
     document.getElementById('tool-image-upload').value = '';
+
+    // Show the modal
     showModal(toolModalEl);
 
     // Focus on the name field after a delay
@@ -684,7 +879,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const imageUpload = document.getElementById('tool-image-upload').files[0];
 
     if (!name || (!image && !imageUpload)) {
-      alert('Please fill in all required fields');
+      showErrorMessage('Please fill in all required fields');
       return;
     }
 
@@ -698,10 +893,10 @@ document.addEventListener('DOMContentLoaded', function() {
           if (image) {
             saveTool(id, name, image);
           } else {
-            alert('Please provide a valid image');
+            showErrorMessage('Please provide a valid image');
           }
         }
-      });
+      }, 'tools');
     } else {
       saveTool(id, name, image);
     }
@@ -731,7 +926,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const description = document.getElementById('service-description').value;
 
     if (!title || !icon || !description) {
-      alert('Please fill in all required fields');
+      showErrorMessage('Please fill in all required fields');
       return;
     }
 
@@ -763,7 +958,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const tagsInput = document.getElementById('project-tags').value;
 
     if (!title || (!image && !imageUpload) || !description || !tagsInput) {
-      alert('Please fill in all required fields');
+      showErrorMessage('Please fill in all required fields');
       return;
     }
 
@@ -780,10 +975,10 @@ document.addEventListener('DOMContentLoaded', function() {
           if (image) {
             saveProject(id, title, image, description, demoUrl, githubUrl, tags);
           } else {
-            alert('Please provide a valid image');
+            showErrorMessage('Please provide a valid image');
           }
         }
-      });
+      }, 'projects');
     } else {
       saveProject(id, title, image, description, demoUrl, githubUrl, tags);
     }
@@ -812,38 +1007,88 @@ document.addEventListener('DOMContentLoaded', function() {
   // Confirm delete
   function confirmDelete(type, index) {
     let id = null;
+    let itemName = '';
+    let itemDetails = '';
 
     console.log(`Confirm delete called for ${type} at index ${index}`);
 
-    // Get the item ID based on type and index
+    // Validate index
+    let itemArray;
     switch (type) {
-      case 'tool':
-        console.log(`Tool data:`, tools[index]);
-        id = tools[index]._id;
-        break;
-      case 'service':
-        console.log(`Service data:`, services[index]);
-        id = services[index]._id;
-        break;
-      case 'project':
-        console.log(`Project data:`, projects[index]);
-        id = projects[index]._id;
-        break;
-      case 'skill':
-        console.log(`Skill data:`, skills[index]);
-        id = skills[index]._id;
-        break;
+      case 'tool': itemArray = tools; break;
+      case 'service': itemArray = services; break;
+      case 'project': itemArray = projects; break;
+      case 'skill': itemArray = skills; break;
     }
 
-    console.log(`Item ID to delete: ${id}`);
-    currentItemToDelete = { type, index, id };
-    showModal(deleteConfirmModalEl);
+    if (index < 0 || index >= itemArray.length) {
+      console.error(`Invalid ${type} index: ${index}`);
+      showErrorMessage(`Error: Invalid ${type} index`);
+      return;
+    }
 
-    // Focus on the cancel button after a delay
-    setTimeout(() => {
-      const cancelBtn = document.getElementById('cancel-delete-btn');
-      if (cancelBtn) cancelBtn.focus();
-    }, 300);
+    try {
+      // Get the item ID and name based on type and index
+      switch (type) {
+        case 'tool':
+          console.log(`Tool data:`, tools[index]);
+          id = tools[index]._id;
+          itemName = tools[index].name;
+          break;
+        case 'service':
+          console.log(`Service data:`, services[index]);
+          id = services[index]._id;
+          itemName = services[index].title;
+          break;
+        case 'project':
+          console.log(`Project data:`, projects[index]);
+          id = projects[index]._id;
+          itemName = projects[index].title;
+          // Add details about the project
+          if (projects[index].tags && projects[index].tags.length > 0) {
+            itemDetails = `<p class="text-muted">Tags: ${projects[index].tags.join(', ')}</p>`;
+          }
+          break;
+        case 'skill':
+          console.log(`Skill data:`, skills[index]);
+          id = skills[index]._id;
+          itemName = skills[index].category;
+          // Add details about the skills in this group
+          if (skills[index].skills && skills[index].skills.length > 0) {
+            itemDetails = `<p class="text-muted">This group contains ${skills[index].skills.length} skills.</p>`;
+          }
+          break;
+      }
+
+      // Update the confirmation modal with specific item details
+      const modalTitle = document.getElementById('deleteConfirmModalLabel');
+      if (modalTitle) {
+        modalTitle.textContent = `Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+      }
+
+      // Set the confirmation message with the item name and details
+      const messageEl = document.getElementById('deleteConfirmModal').querySelector('.modal-body');
+      if (messageEl) {
+        messageEl.innerHTML = `
+          <p>Are you sure you want to delete "<strong>${itemName}</strong>"?</p>
+          ${itemDetails}
+          <p class="text-danger"><strong>This action cannot be undone.</strong></p>
+        `;
+      }
+
+      console.log(`Item ID to delete: ${id}`);
+      currentItemToDelete = { type, index, id, name: itemName };
+      showModal(deleteConfirmModalEl);
+
+      // Focus on the cancel button for safety
+      setTimeout(() => {
+        const cancelBtn = document.getElementById('cancel-delete-btn');
+        if (cancelBtn) cancelBtn.focus();
+      }, 300);
+    } catch (error) {
+      console.error('Error preparing delete confirmation:', error);
+      showErrorMessage(`Error preparing delete confirmation: ${error.message}`);
+    }
   }
 
   // Delete item
@@ -852,47 +1097,74 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (!currentItemToDelete) {
       console.error('No item to delete!');
+      showErrorMessage('No item selected for deletion');
       return;
     }
 
-    const { type, index, id } = currentItemToDelete;
+    const { type, index, id, name } = currentItemToDelete;
     console.log(`Deleting ${type} at index ${index} with ID ${id}`);
+
+    // Show loading state
+    this.disabled = true;
+    this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Deleting...';
 
     // If we have an ID, use the API to delete
     if (id) {
       console.log(`Using API to delete ${type} with ID ${id}`);
+
+      // Hide the modal first for better UX
+      hideModal(deleteConfirmModalEl);
+
+      // Then delete the item
       deleteData(type + 's', id);
     } else {
       console.log(`No ID available, using local deletion for ${type} at index ${index}`);
-      // Fallback to local deletion if no ID is available
-      switch (type) {
-        case 'tool':
-          tools.splice(index, 1);
-          loadTools();
-          break;
-        case 'service':
-          services.splice(index, 1);
-          loadServices();
-          break;
-        case 'project':
-          projects.splice(index, 1);
-          loadProjects();
-          break;
-        case 'skill':
-          skills.splice(index, 1);
-          loadSkills();
-          break;
+
+      try {
+        // Fallback to local deletion if no ID is available
+        switch (type) {
+          case 'tool':
+            tools.splice(index, 1);
+            renderTools();
+            break;
+          case 'service':
+            services.splice(index, 1);
+            renderServices();
+            break;
+          case 'project':
+            projects.splice(index, 1);
+            renderProjects();
+            break;
+          case 'skill':
+            skills.splice(index, 1);
+            renderSkills();
+            break;
+        }
+
+        hideModal(deleteConfirmModalEl);
+        showSuccessMessage(`${type.charAt(0).toUpperCase() + type.slice(1)} "${name}" deleted successfully!`);
+      } catch (error) {
+        console.error(`Error with local deletion:`, error);
+        showErrorMessage(`Error deleting ${type}: ${error.message}`);
       }
     }
 
-    hideModal(deleteConfirmModalEl);
-    currentItemToDelete = null;
+    // Reset button state and clear current item
+    setTimeout(() => {
+      this.disabled = false;
+      this.innerHTML = 'Delete';
+      currentItemToDelete = null;
+    }, 500);
   });
 
   // Save data to MongoDB via API
   function saveData(type, item, isNew = false, itemId = null) {
     const endpoint = `${API_URL}/${type}${itemId ? `/${itemId}` : ''}`;
     const method = isNew ? 'POST' : itemId ? 'PUT' : 'POST';
+
+    // Show loading indicator
+    const loadingId = 'saving-' + Date.now();
+    showLoadingMessage(`Saving ${type.slice(0, -1)}...`, loadingId);
 
     fetch(endpoint, {
       method: method,
@@ -904,42 +1176,172 @@ document.addEventListener('DOMContentLoaded', function() {
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error(`Error saving ${type}: ${response.statusText}`);
+          return response.text().then(text => {
+            throw new Error(`Error saving ${type}: ${text || response.statusText}`);
+          });
         }
         return response.json();
       })
       .then(data => {
-        alert(`${type.charAt(0).toUpperCase() + type.slice(1)} saved successfully!`);
+        // Remove loading message
+        removeLoadingMessage(loadingId);
 
-        // Reload the data to get the updated list
-        switch (type) {
-          case 'tools':
-            loadTools();
-            break;
-          case 'services':
-            loadServices();
-            break;
-          case 'projects':
-            loadProjects();
-            break;
-          case 'skills':
-            loadSkills();
-            break;
+        // Show success message
+        const itemName = getItemName(type, item);
+        showSuccessMessage(`${capitalizeFirstLetter(type.slice(0, -1))} "${itemName}" ${isNew ? 'added' : 'updated'} successfully!`);
+
+        // Update local data immediately for better UX
+        if (isNew) {
+          // For new items, add the returned item (with _id) to the local array
+          updateLocalArray(type, null, data);
+        } else {
+          // For updated items, update the existing item in the local array
+          updateLocalArray(type, itemId, data);
         }
+
+        // Render the updated data
+        renderUpdatedData(type);
       })
       .catch(error => {
+        // Remove loading message
+        removeLoadingMessage(loadingId);
+
         console.error(`Error saving ${type}:`, error);
-        alert(`Error saving data. Please try again.`);
+        showErrorMessage(`Error saving ${type.slice(0, -1)}: ${error.message}`);
       });
+  }
+
+  // Helper function to get item name for display in messages
+  function getItemName(type, item) {
+    switch (type) {
+      case 'tools':
+        return item.name;
+      case 'services':
+        return item.title;
+      case 'projects':
+        return item.title;
+      case 'skills':
+        return item.category;
+      default:
+        return 'item';
+    }
+  }
+
+  // Helper function to capitalize first letter
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  // Update local array with new or updated item
+  function updateLocalArray(type, itemId, data) {
+    switch (type) {
+      case 'tools':
+        if (itemId) {
+          // Update existing tool
+          const index = tools.findIndex(t => t._id === itemId);
+          if (index !== -1) {
+            tools[index] = data;
+          }
+        } else {
+          // Add new tool
+          tools.push(data);
+        }
+        break;
+      case 'services':
+        if (itemId) {
+          // Update existing service
+          const index = services.findIndex(s => s._id === itemId);
+          if (index !== -1) {
+            services[index] = data;
+          }
+        } else {
+          // Add new service
+          services.push(data);
+        }
+        break;
+      case 'projects':
+        if (itemId) {
+          // Update existing project
+          const index = projects.findIndex(p => p._id === itemId);
+          if (index !== -1) {
+            projects[index] = data;
+          }
+        } else {
+          // Add new project
+          projects.push(data);
+        }
+        break;
+      case 'skills':
+        if (itemId) {
+          // Update existing skill group
+          const index = skills.findIndex(s => s._id === itemId);
+          if (index !== -1) {
+            skills[index] = data;
+          }
+        } else {
+          // Add new skill group
+          skills.push(data);
+        }
+        break;
+    }
+  }
+
+  // Render updated data
+  function renderUpdatedData(type) {
+    switch (type) {
+      case 'tools':
+        renderTools();
+        break;
+      case 'services':
+        renderServices();
+        break;
+      case 'projects':
+        renderProjects();
+        break;
+      case 'skills':
+        renderSkills();
+        break;
+    }
+  }
+
+  // Show loading message
+  function showLoadingMessage(message, id) {
+    const alertContainer = document.getElementById('alert-container');
+    if (!alertContainer) return;
+
+    const alert = document.createElement('div');
+    alert.id = id;
+    alert.className = 'alert alert-info alert-dismissible fade show';
+    alert.innerHTML = `
+      <div class="d-flex align-items-center">
+        <div class="spinner-border spinner-border-sm me-2" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        ${message}
+      </div>
+    `;
+
+    alertContainer.appendChild(alert);
+  }
+
+  // Remove loading message
+  function removeLoadingMessage(id) {
+    const loadingAlert = document.getElementById(id);
+    if (loadingAlert) {
+      loadingAlert.remove();
+    }
   }
 
   // Delete data from MongoDB via API
   function deleteData(type, itemId) {
     const endpoint = `${API_URL}/${type}/${itemId}`;
 
+    // Show loading indicator
+    const loadingId = 'deleting-' + Date.now();
+    showLoadingMessage(`Deleting ${type.slice(0, -1)}...`, loadingId);
+
     console.log(`Attempting to delete ${type} with ID: ${itemId}`);
     console.log(`Endpoint: ${endpoint}`);
-    console.log(`Auth token: ${authToken ? 'Token exists' : 'No token'}`);
 
     fetch(endpoint, {
       method: 'DELETE',
@@ -953,39 +1355,75 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!response.ok) {
           return response.text().then(text => {
             console.error(`Error response body: ${text}`);
-            throw new Error(`Error deleting ${type}: ${response.statusText}`);
+            throw new Error(`Error deleting ${type}: ${text || response.statusText}`);
           });
         }
         return response.json();
       })
       .then(data => {
-        console.log(`Delete successful:`, data);
-        alert(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully!`);
+        // Remove loading message
+        removeLoadingMessage(loadingId);
 
-        // Reload the data to get the updated list
+        console.log(`Delete successful:`, data);
+
+        // Find the name of the deleted item for the success message
+        let itemName = 'item';
         switch (type) {
           case 'tools':
-            loadTools();
+            const toolIndex = tools.findIndex(t => t._id === itemId);
+            if (toolIndex !== -1) {
+              itemName = tools[toolIndex].name;
+              // Remove from local array
+              tools.splice(toolIndex, 1);
+              // Update UI
+              renderTools();
+            }
             break;
           case 'services':
-            loadServices();
+            const serviceIndex = services.findIndex(s => s._id === itemId);
+            if (serviceIndex !== -1) {
+              itemName = services[serviceIndex].title;
+              // Remove from local array
+              services.splice(serviceIndex, 1);
+              // Update UI
+              renderServices();
+            }
             break;
           case 'projects':
-            loadProjects();
+            const projectIndex = projects.findIndex(p => p._id === itemId);
+            if (projectIndex !== -1) {
+              itemName = projects[projectIndex].title;
+              // Remove from local array
+              projects.splice(projectIndex, 1);
+              // Update UI
+              renderProjects();
+            }
             break;
           case 'skills':
-            loadSkills();
+            const skillIndex = skills.findIndex(s => s._id === itemId);
+            if (skillIndex !== -1) {
+              itemName = skills[skillIndex].category;
+              // Remove from local array
+              skills.splice(skillIndex, 1);
+              // Update UI
+              renderSkills();
+            }
             break;
         }
+
+        showSuccessMessage(`${capitalizeFirstLetter(type.slice(0, -1))} "${itemName}" deleted successfully!`);
       })
       .catch(error => {
+        // Remove loading message
+        removeLoadingMessage(loadingId);
+
         console.error(`Error deleting ${type}:`, error);
-        alert(`Error deleting data. Please try again.`);
+        showErrorMessage(`Error deleting ${type.slice(0, -1)}: ${error.message}`);
       });
   }
 
   // Handle file uploads
-  function handleFileUpload(fileInput, callback) {
+  function handleFileUpload(fileInput, callback, category = 'general') {
     const file = fileInput.files[0];
     if (!file) {
       callback(null);
@@ -995,31 +1433,71 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check file type
     const fileType = file.type;
     if (!fileType.match(/image\/(jpeg|jpg|png|gif|webp)/)) {
-      alert('Only JPEG, PNG, GIF, and WEBP files are allowed.');
+      showErrorMessage('Only JPEG, PNG, GIF, and WEBP files are allowed.');
       callback(null);
       return;
     }
 
     // Check file size (limit to 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('File size exceeds 5MB limit.');
+      showErrorMessage('File size exceeds 5MB limit.');
       callback(null);
       return;
     }
 
-    // Read the file and convert to data URL
+    // Convert to data URL with compression
     const reader = new FileReader();
     reader.onload = function(e) {
-      // In a real MERN application, we would upload this to a server
-      // For this demo, we'll use the data URL directly
-      const imagePath = `data:${fileType};base64,${btoa(e.target.result)}`;
-      callback(imagePath);
+      // Compress the image before using it
+      const img = new Image();
+      img.onload = function() {
+        // Create a canvas to resize and compress the image
+        const canvas = document.createElement('canvas');
+
+        // Calculate new dimensions (max 1200px width/height)
+        let width = img.width;
+        let height = img.height;
+        const maxSize = 1200;
+
+        if (width > maxSize || height > maxSize) {
+          if (width > height) {
+            height = Math.round(height * (maxSize / width));
+            width = maxSize;
+          } else {
+            width = Math.round(width * (maxSize / height));
+            height = maxSize;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw and compress the image
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert to data URL with compression (0.7 quality)
+        const compressedDataUrl = canvas.toDataURL(file.type, 0.7);
+
+        // Use the compressed data URL
+        callback(compressedDataUrl);
+      };
+
+      img.onerror = function() {
+        showErrorMessage('Error processing image.');
+        callback(null);
+      };
+
+      // Load the image from the FileReader result
+      img.src = e.target.result;
     };
+
     reader.onerror = function() {
-      alert('Error reading file.');
+      showErrorMessage('Error reading file.');
       callback(null);
     };
-    reader.readAsBinaryString(file);
+
+    reader.readAsDataURL(file);
   }
 
   // Load skills data
@@ -1048,6 +1526,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Render skills
   function renderSkills() {
+    if (!skillsList) {
+      console.error('Skills list element not found');
+      return;
+    }
+
     if (skills.length === 0) {
       skillsList.innerHTML = '<div class="col-12 text-center py-5"><p>No skill groups found. Add your first skill group!</p></div>';
       return;
@@ -1072,12 +1555,12 @@ document.addEventListener('DOMContentLoaded', function() {
                   `).join('')}
                 </ul>
               </div>
-              <div class="item-actions">
-                <button class="btn btn-sm btn-primary btn-icon edit-skill-group" data-index="${index}">
-                  <i class="bi bi-pencil"></i>
+              <div class="item-actions" style="display: flex; justify-content: center; margin-top: 15px; gap: 10px;">
+                <button class="btn btn-primary edit-skill-group" data-index="${index}" title="Edit Skill Group" style="min-width: 80px;" onclick="editSkillGroup(${index}); return false;">
+                  <i class="bi bi-pencil-fill"></i> Edit
                 </button>
-                <button class="btn btn-sm btn-danger btn-icon delete-skill-group" data-index="${index}">
-                  <i class="bi bi-trash"></i>
+                <button class="btn btn-danger delete-skill-group" data-index="${index}" title="Delete Skill Group" style="min-width: 80px;" onclick="confirmDelete('skill', ${index}); return false;">
+                  <i class="bi bi-trash-fill"></i> Delete
                 </button>
               </div>
             </div>
@@ -1086,21 +1569,51 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
     });
 
-    skillsList.innerHTML = html;
+    try {
+      skillsList.innerHTML = html;
+    } catch (error) {
+      console.error('Error updating skills list HTML:', error);
+    }
 
     // Add event listeners to edit and delete buttons
-    document.querySelectorAll('.edit-skill-group').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const index = parseInt(this.getAttribute('data-index'));
-        editSkillGroup(index);
-      });
+    document.querySelectorAll('.edit-skill-group').forEach((btn, i) => {
+      // Remove existing event listeners by cloning the button itself
+      const newBtn = btn.cloneNode(true);
+      if (btn.parentNode) {
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        // Add new event listener
+        newBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const index = parseInt(this.getAttribute('data-index'));
+          console.log(`Edit skill group button clicked for index ${index}`);
+          editSkillGroup(index);
+        });
+
+        // Add a visual indicator that the button is clickable
+        newBtn.style.cursor = 'pointer';
+      }
     });
 
-    document.querySelectorAll('.delete-skill-group').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const index = parseInt(this.getAttribute('data-index'));
-        confirmDelete('skill', index);
-      });
+    document.querySelectorAll('.delete-skill-group').forEach((btn, i) => {
+      // Remove existing event listeners by cloning the button itself
+      const newBtn = btn.cloneNode(true);
+      if (btn.parentNode) {
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        // Add new event listener
+        newBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const index = parseInt(this.getAttribute('data-index'));
+          console.log(`Delete skill group button clicked for index ${index}`);
+          confirmDelete('skill', index);
+        });
+
+        // Add a visual indicator that the button is clickable
+        newBtn.style.cursor = 'pointer';
+      }
     });
   }
 
@@ -1150,7 +1663,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const skillsText = document.getElementById('skill-group-skills').value;
 
     if (!category || !icon || !skillsText) {
-      alert('Please fill in all required fields');
+      showErrorMessage('Please fill in all required fields');
       return;
     }
 
@@ -1160,7 +1673,7 @@ document.addEventListener('DOMContentLoaded', function() {
       .filter(skill => skill !== '');
 
     if (skillsList.length === 0) {
-      alert('Please add at least one skill');
+      showErrorMessage('Please add at least one skill');
       return;
     }
 
@@ -1180,64 +1693,106 @@ document.addEventListener('DOMContentLoaded', function() {
     hideModal(skillGroupModalEl);
   });
 
-  // Add event listeners for cancel buttons
+  // Add event listeners for cancel buttons - these now use data-bs-dismiss="modal"
+  // but we'll keep the event listeners for any additional cleanup needed
   document.getElementById('cancel-tool-btn').addEventListener('click', function() {
-    hideModal(toolModalEl);
+    console.log('Cancel tool button clicked');
   });
 
   document.getElementById('cancel-service-btn').addEventListener('click', function() {
-    hideModal(serviceModalEl);
+    console.log('Cancel service button clicked');
   });
 
   document.getElementById('cancel-project-btn').addEventListener('click', function() {
-    hideModal(projectModalEl);
+    console.log('Cancel project button clicked');
+  });
+
+  document.getElementById('cancel-skill-group-btn').addEventListener('click', function() {
+    console.log('Cancel skill group button clicked');
   });
 
   document.getElementById('cancel-delete-btn').addEventListener('click', function() {
     console.log('Cancel delete button clicked');
-    hideModal(deleteConfirmModalEl);
   });
 
-  // Add event listeners for close buttons in modal headers
-  document.querySelectorAll('.modal .btn-close').forEach(btn => {
-    btn.addEventListener('click', function() {
-      console.log('Close button clicked in modal header');
-      const modal = this.closest('.modal');
-      if (modal) {
-        hideModal(modal);
+  // Add event listeners for Bootstrap modal events
+  // This ensures our code knows when modals are hidden by Bootstrap
+  [toolModalEl, serviceModalEl, projectModalEl, skillGroupModalEl, deleteConfirmModalEl].forEach(modal => {
+    modal.addEventListener('hidden.bs.modal', function() {
+      console.log(`Modal ${this.id} was hidden by Bootstrap`);
+    });
+
+    modal.addEventListener('shown.bs.modal', function() {
+      console.log(`Modal ${this.id} was shown by Bootstrap`);
+
+      // Focus on the first input field
+      const firstInput = this.querySelector('input:not([type="hidden"]), textarea');
+      if (firstInput) {
+        firstInput.focus();
       }
     });
   });
 
-  document.getElementById('cancel-skill-group-btn').addEventListener('click', function() {
-    hideModal(skillGroupModalEl);
+  // Initialize Bootstrap modals
+  const modals = [toolModalEl, serviceModalEl, projectModalEl, skillGroupModalEl, deleteConfirmModalEl];
+  modals.forEach(modal => {
+    // Make sure modals are properly initialized with Bootstrap
+    if (modal) {
+      new bootstrap.Modal(modal);
+    }
   });
 
-  document.getElementById('cancel-delete-btn').addEventListener('click', function() {
-    hideModal(deleteConfirmModalEl);
-  });
+  // Show success message
+  function showSuccessMessage(message) {
+    const alertContainer = document.getElementById('alert-container');
+    if (!alertContainer) return;
 
-  // Add event listeners for close buttons in modal headers
-  toolModalEl.querySelector('.btn-close').addEventListener('click', function() {
-    hideModal(toolModalEl);
-  });
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success alert-dismissible fade show';
+    alert.innerHTML = `
+      <i class="bi bi-check-circle-fill me-2"></i>
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
 
-  serviceModalEl.querySelector('.btn-close').addEventListener('click', function() {
-    hideModal(serviceModalEl);
-  });
+    alertContainer.appendChild(alert);
 
-  projectModalEl.querySelector('.btn-close').addEventListener('click', function() {
-    hideModal(projectModalEl);
-  });
+    // Auto-dismiss after 3 seconds
+    setTimeout(() => {
+      alert.classList.remove('show');
+      setTimeout(() => alert.remove(), 300);
+    }, 3000);
+  }
 
-  skillGroupModalEl.querySelector('.btn-close').addEventListener('click', function() {
-    hideModal(skillGroupModalEl);
-  });
+  // Show error message
+  function showErrorMessage(message) {
+    const alertContainer = document.getElementById('alert-container');
+    if (!alertContainer) return;
 
-  deleteConfirmModalEl.querySelector('.btn-close').addEventListener('click', function() {
-    hideModal(deleteConfirmModalEl);
-  });
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-danger alert-dismissible fade show';
+    alert.innerHTML = `
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
 
-  // Initialize
+    alertContainer.appendChild(alert);
+
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      alert.classList.remove('show');
+      setTimeout(() => alert.remove(), 300);
+    }, 5000);
+  }
+
+  // Initialize authentication
   checkAuth();
+
+  // Assign functions to global variables for access from HTML
+  window.editTool = editTool;
+  window.editService = editService;
+  window.editProject = editProject;
+  window.editSkillGroup = editSkillGroup;
+  window.confirmDelete = confirmDelete;
 });

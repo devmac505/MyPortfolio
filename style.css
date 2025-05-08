@@ -1335,6 +1335,54 @@ section:nth-child(even) {
   transition: all 0.3s ease;
 }
 
+/* Modal styles */
+.modal {
+  z-index: 1050 !important;
+  pointer-events: auto !important;
+}
+
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+
+.modal-content {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  z-index: 1051 !important;
+  position: relative;
+  pointer-events: auto !important;
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--border-color);
+  padding: 15px 20px;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--border-color);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-title {
+  color: var(--text-color);
+}
+
+.btn-close {
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.btn-close:hover {
+  opacity: 1;
+}
 
 
 /* Dark mode adjustments for sticky notes */
@@ -1537,6 +1585,9 @@ section:nth-child(even) {
   border-top: 1px solid var(--border-color);
   padding: 15px 20px;
   background-color: var(--card-bg);
+  display: flex;
+  justify-content: center;
+  gap: 15px;
 }
 
 .modal-body .form-control {
@@ -1577,29 +1628,27 @@ section:nth-child(even) {
 /* Custom modal styling for manual modals */
 .modal {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: auto;
-  max-width: 90%;
-  height: auto;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 1050 !important;
   display: none;
-  overflow: visible;
+  overflow: auto;
   outline: 0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  border-radius: 15px;
+  pointer-events: auto !important;
 }
 
 .modal.show {
   display: block;
+  pointer-events: auto !important;
 }
 
 .modal-dialog {
   position: relative;
   width: 100%;
   max-width: 500px;
-  margin: 0 auto;
+  margin: 1.75rem auto;
   pointer-events: auto;
   transition: transform 0.3s ease-out;
 }
@@ -1607,9 +1656,28 @@ section:nth-child(even) {
 .modal-dialog-centered {
   display: flex;
   align-items: center;
+  min-height: calc(100% - 3.5rem);
 }
 
-/* No backdrop - removed */
+/* Modal backdrop */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1040 !important;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  pointer-events: none; /* Allow clicks to pass through to modal */
+}
+
+.modal-backdrop.fade {
+  opacity: 0;
+}
+
+.modal-backdrop.show {
+  opacity: 0.5;
+}
 
 /* Improved modal appearance */
 .modal-content {
@@ -1617,21 +1685,37 @@ section:nth-child(even) {
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
   background-color: var(--card-bg);
   color: var(--text-color);
+  z-index: 1051 !important;
+  position: relative;
+  pointer-events: auto !important;
 }
 
 /* Make modal more visible without backdrop */
 #noteModal, #viewNoteModal {
+  animation: modal-fade 0.3s ease;
+}
+
+@keyframes modal-fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#noteModal .modal-dialog, #viewNoteModal .modal-dialog {
   animation: modal-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes modal-pop {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.8);
+    transform: scale(0.8);
   }
   100% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1);
   }
 }
 
@@ -1654,6 +1738,8 @@ section:nth-child(even) {
   border-radius: 50px;
   font-weight: 500;
   cursor: pointer;
+  min-width: 100px;
+  margin: 0 5px;
 }
 
 /* Dark mode modal styles */
@@ -1968,6 +2054,20 @@ section:nth-child(even) {
 
   .modal-body {
     padding: 20px 15px;
+  }
+
+  /* Ensure modals are visible and interactive */
+  .modal {
+    z-index: 1050 !important;
+  }
+
+  .modal-backdrop {
+    z-index: 1040 !important;
+  }
+
+  .modal-content {
+    z-index: 1051 !important;
+    position: relative;
   }
 
   /* Make the add note button more prominent on mobile */
