@@ -1,9 +1,11 @@
 {
   "root": "./",
-  "clean_urls": true,
+  "clean_urls": false,
   "routes": {
     "/**": "index.html"
   },
+  "https_only": true,
+  "error_page": "index.html",
   "headers": {
     "/**": {
       "Cache-Control": "public, max-age=0, must-revalidate"
